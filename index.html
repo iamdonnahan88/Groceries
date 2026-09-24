@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>오늘 뭐 사지👀</title>
   
-  <!-- 트렌디하고 가독성 높은 프리텐다드(Pretendard) 웹폰트 로드 -->
+  <!-- 가독성 높은 프리텐다드(Pretendard) 웹폰트 로드 -->
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
   <!-- Firebase SDK 라이브러리 로드 -->
@@ -57,7 +57,7 @@
     .sub-brand { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; color: #a48771; font-family: "Corbel", sans-serif; }
     .select-title-box { text-align: center; margin-bottom: 26px; }
     
-    /* WELCOME 뱃지: 요청하신 Corbel 폰트 적용 */
+    /* WELCOME 뱃지: Corbel 폰트 */
     .badge-sub { 
       font-size: 14px; 
       font-weight: 700; 
@@ -295,7 +295,7 @@
     </div>
 
     <div class="member-input-wrap">
-      <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: Donna, 아들, 딸)" onkeypress="if(event.key==='Enter') addMember()">
+      <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: Donna, Sia, Sian)" onkeypress="if(event.key==='Enter') addMember()">
       <button type="button" class="btn-member-add" onclick="addMember()">추가</button>
     </div>
 
@@ -408,7 +408,22 @@
 </div>
 
 <script>
-  const DONNA_PIN = "88";
+  // ==========================================
+  // 구성원별 비밀번호 PIN 설정
+  // ==========================================
+  const USER_PINS = {
+    "donna": "88",
+    "sia": "16",
+    "시아": "16",
+    "sian": "19",
+    "시안": "19"
+  };
+
+  function getRequiredPin(name) {
+    if (!name) return null;
+    const clean = name.trim().toLowerCase();
+    return USER_PINS[clean] || null;
+  }
 
   const firebaseConfig = {
     apiKey: "AIzaSyCwDdHF5Fw5d2gMal5H1K3OC9isByJJbOM",
@@ -431,7 +446,7 @@
   let members = [];
   let items = [];
   let currentUser = null;
-  let targetDonnaMember = null;
+  let targetLockedMember = null;
 
   const categoryIcons = {
     "채소·과일": "🥬",
@@ -582,16 +597,17 @@
     }
 
     members.forEach(member => {
-      const isDonna = member.name.trim().toLowerCase() === "donna";
+      const pinRequired = getRequiredPin(member.name);
       const card = document.createElement("div");
       card.className = "user-card";
       card.onclick = () => onMemberCardClick(member);
 
-      const subHtml = isDonna ? `
+      // 비밀번호가 걸려있는 멤버(Donna, Sia, Sian)는 자물쇠 + 파스텔 동그라미 2개 표시
+      const subHtml = pinRequired ? `
         <span>🔒</span>
         <span class="pin-inline-wrap">
-          <span id="cardDot0" class="pin-mini-dot"></span>
-          <span id="cardDot1" class="pin-mini-dot"></span>
+          <span id="dot_${member.key}_0" class="pin-mini-dot"></span>
+          <span id="dot_${member.key}_1" class="pin-mini-dot"></span>
         </span>
       ` : "목록 열기";
 
@@ -635,13 +651,13 @@
   }
 
   function onMemberCardClick(member) {
-    const isDonna = member.name.trim().toLowerCase() === "donna";
+    const requiredPin = getRequiredPin(member.name);
 
-    if (isDonna) {
-      targetDonnaMember = member;
+    if (requiredPin) {
+      targetLockedMember = member;
       const hiddenInput = document.getElementById("hiddenPinInput");
       hiddenInput.value = "";
-      updateCardDots("");
+      updateCardDots(member.key, "");
       hiddenInput.focus();
     } else {
       enterApp(member);
@@ -649,34 +665,38 @@
   }
 
   function onPinInputChange(input) {
+    if (!targetLockedMember) return;
+    const key = targetLockedMember.key;
+    const requiredPin = getRequiredPin(targetLockedMember.name);
     const val = input.value;
-    updateCardDots(val);
+
+    updateCardDots(key, val);
 
     if (val.length === 2) {
-      if (val === DONNA_PIN) {
+      if (val === requiredPin) {
         input.blur();
-        const m = targetDonnaMember;
+        const m = targetLockedMember;
         setTimeout(() => {
           enterApp(m);
         }, 150);
       } else {
-        const d0 = document.getElementById("cardDot0");
-        const d1 = document.getElementById("cardDot1");
+        const d0 = document.getElementById(`dot_${key}_0`);
+        const d1 = document.getElementById(`dot_${key}_1`);
         if (d0 && d1) {
           d0.classList.add("shake");
           d1.classList.add("shake");
         }
         setTimeout(() => {
           input.value = "";
-          updateCardDots("");
+          updateCardDots(key, "");
         }, 450);
       }
     }
   }
 
-  function updateCardDots(val) {
-    const d0 = document.getElementById("cardDot0");
-    const d1 = document.getElementById("cardDot1");
+  function updateCardDots(key, val) {
+    const d0 = document.getElementById(`dot_${key}_0`);
+    const d1 = document.getElementById(`dot_${key}_1`);
     if (!d0 || !d1) return;
 
     d0.classList.toggle("filled", val.length >= 1);
@@ -695,7 +715,7 @@
 
   function goToSelectPage() {
     currentUser = null;
-    targetDonnaMember = null;
+    targetLockedMember = null;
     document.getElementById("page-grocery").style.display = "none";
     document.getElementById("page-select").style.display = "block";
     renderMembers();
