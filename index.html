@@ -48,7 +48,7 @@
       background: #fdfbf7;
       border: 1px solid var(--border-soft);
       border-radius: 28px;
-      padding: 38px 28px;
+      padding: 38px 24px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
       margin-top: 16px;
     }
@@ -71,9 +71,42 @@
     .select-title-box h1 { font-size: 30px; line-height: 1.35; margin-bottom: 10px; font-weight: 800; }
     .select-title-box p { color: var(--text-muted); font-size: 14.5px; }
 
-    .member-input-wrap { display: flex; gap: 8px; background: #f3eee5; padding: 6px; border-radius: 12px; margin-bottom: 24px; }
-    .member-input-wrap input { flex: 1; border: none; padding: 12px 14px; border-radius: 8px; outline: none; font-size: 14px; background: #fff; }
-    .btn-member-add { background: var(--primary-green); color: white; border: none; padding: 0 18px; border-radius: 8px; font-weight: 700; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+    /* 입력 래퍼: 라인 안에 쏙 들어가고 가운데 정렬 */
+    .member-input-wrap { 
+      display: flex; 
+      gap: 6px; 
+      background: #f3eee5; 
+      padding: 6px; 
+      border-radius: 12px; 
+      margin: 0 auto 24px; 
+      width: 100%; 
+      max-width: 420px; 
+      align-items: center;
+    }
+    .member-input-wrap input { 
+      flex: 1; 
+      min-width: 0; 
+      border: none; 
+      padding: 11px 12px; 
+      border-radius: 8px; 
+      outline: none; 
+      font-size: 13.5px; 
+      background: #fff; 
+    }
+    .btn-member-add { 
+      background: var(--primary-green); 
+      color: white; 
+      border: none; 
+      padding: 0 16px; 
+      height: 40px; 
+      border-radius: 8px; 
+      font-weight: 700; 
+      cursor: pointer; 
+      white-space: nowrap; 
+      flex-shrink: 0; 
+      font-size: 14px;
+    }
+
     .members-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px; }
     .user-card {
       background: #ffffff;
@@ -166,7 +199,7 @@
     .input-row-1 input { flex: 1; border: none; outline: none; font-size: 16px; color: var(--text-dark); }
     .input-row-1 input::placeholder { color: #b4bdb6; }
     
-    /* 두 번째 줄: 수량, 카테고리, Store, 버튼을 줄바꿈 없이 한 줄에 배치 */
+    /* 두 번째 줄: 수량, 카테고리, Store, Add List 버튼 */
     .input-row-2 { 
       display: flex; 
       gap: 5px; 
@@ -199,7 +232,7 @@
       background: var(--primary-green); 
       color: white; 
       border: none; 
-      padding: 10px 11px; 
+      padding: 10px 12px; 
       border-radius: 10px; 
       font-weight: 700; 
       font-size: 13px; 
@@ -330,6 +363,7 @@
       <p>가족 이름을 추가하세요🤍</p>
     </div>
 
+    <!-- 라인 안쪽 중앙 정렬된 입력창 -->
     <div class="member-input-wrap">
       <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: Donna, Sia, Sian)" onkeypress="if(event.key==='Enter') addMember()">
       <button type="button" class="btn-member-add" onclick="addMember()">추가</button>
@@ -403,7 +437,7 @@
           <option value="기타">etc.</option>
         </select>
 
-        <button type="button" class="btn-submit" onclick="addItem()">목록에 추가</button>
+        <button type="button" class="btn-submit" onclick="addItem()">Add List</button>
       </div>
     </div>
 
@@ -476,8 +510,9 @@
   const membersRef = db.ref("members");
   const itemsRef = db.ref("items");
 
-  const STORES = ["전체", "Costco", "Trader Joe's", "H-Mart", "HEB", "Kroger", "기타", "상관없음"];
-  let selectedStoreFilter = "전체";
+  // '전체' ➔ 'ALL'로 변경
+  const STORES = ["ALL", "Costco", "Trader Joe's", "H-Mart", "HEB", "Kroger", "기타", "상관없음"];
+  let selectedStoreFilter = "ALL";
 
   let members = [];
   let items = [];
@@ -864,7 +899,7 @@
     bar.innerHTML = "";
 
     STORES.forEach(st => {
-      const count = st === "전체" 
+      const count = st === "ALL" 
         ? pendingItems.length 
         : pendingItems.filter(it => it.store === st).length;
 
@@ -924,14 +959,14 @@
     renderStoreFilters(pendingItems);
 
     let displayPending = pendingItems;
-    if (selectedStoreFilter !== "전체") {
+    if (selectedStoreFilter !== "ALL") {
       displayPending = pendingItems.filter(it => it.store === selectedStoreFilter);
     }
 
     if (displayPending.length === 0) {
-      pendingListContainer.innerHTML = `<div class="empty-note">${selectedStoreFilter === "전체" ? "구매할 품목이 비어있습니다." : selectedStoreFilter + "에 구매할 품목이 없습니다."}</div>`;
+      pendingListContainer.innerHTML = `<div class="empty-note">${selectedStoreFilter === "ALL" ? "구매할 품목이 비어있습니다." : selectedStoreFilter + "에 구매할 품목이 없습니다."}</div>`;
     } else {
-      if (selectedStoreFilter === "전체") {
+      if (selectedStoreFilter === "ALL") {
         const groups = {};
         displayPending.forEach(it => {
           const storeName = it.store || "상관없음";
