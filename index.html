@@ -37,12 +37,13 @@
       background-color: var(--bg-cream);
       margin: 0;
       padding: 0;
+      width: 100%;
     }
     body {
       color: var(--text-dark);
-      min-height: 100dvh;
       display: flex;
       justify-content: center;
+      padding: 12px;
     }
     .container { 
       width: 100%; 
@@ -56,8 +57,9 @@
       border-radius: 28px;
       padding: 24px 20px 20px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-      margin: 10px 12px;
-      height: calc(100dvh - 20px); 
+      width: 100%;
+      height: calc(100vh - 24px);
+      height: calc(100dvh - 24px); 
       display: flex;
       flex-direction: column;
       justify-content: space-between; 
@@ -199,11 +201,12 @@
     .btn-member-del:hover { color: #e53e3e; }
     .slogan { text-align: center; font-size: 12px; font-style: italic; color: #9c9186; width: 100%; flex-shrink: 0; }
 
-    /* 페이지 2: 장보기 메인 */
+    /* 페이지 2: 장보기 메인 (화면 맨 위부터 정확히 시작) */
     #page-grocery { 
       display: none; 
       width: 100%; 
-      padding: 18px 14px 40px; 
+      padding-top: 10px;
+      padding-bottom: 50px; 
     }
     .top-nav { 
       display: flex; 
@@ -219,7 +222,7 @@
       display: flex; align-items: center; gap: 8px; background: #ffffff;
       padding: 6px 14px; border-radius: 24px; border: 1px solid var(--border-light);
       cursor: pointer; font-size: 14px; font-weight: 700;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
     .user-tag-avatar { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
 
@@ -394,7 +397,7 @@
 
 <div class="container">
 
-  <!-- 화면 1: 가족 구성원 선택 (화면 전체 프레임 + 테두리 안 완벽 중앙 정렬) -->
+  <!-- 화면 1: 가족 구성원 선택 -->
   <div id="page-select">
     <div class="select-header">
       <div class="basket-box">🧺</div>
@@ -422,7 +425,7 @@
     <input type="tel" id="hiddenPinInput" maxlength="2" inputmode="numeric" pattern="[0-9]*" oninput="onPinInputChange(this)">
   </div>
 
-  <!-- 화면 2: 장보기 메인 -->
+  <!-- 화면 2: 장보기 메인 (정상 상단 바 완벽 노출) -->
   <div id="page-grocery">
     <div class="top-nav">
       <div class="brand-group">
@@ -522,9 +525,6 @@
 </div>
 
 <script>
-  // ==========================================
-  // 구성원별 비밀번호 PIN 설정
-  // ==========================================
   const USER_PINS = {
     "donna": "88",
     "sia": "16",
@@ -574,7 +574,7 @@
   function getItemEmoji(name, cat) {
     const text = name.toLowerCase();
 
-    // 1. 의약품 / 건강 / 상비약 브랜드
+    // 1. 의약품 / 건강
     if (text.includes("타이레놀") || text.includes("tylenol") || text.includes("애드빌") || text.includes("advil") || 
         text.includes("모트린") || text.includes("motrin") || text.includes("알레그라") || text.includes("지르텍") || 
         text.includes("감기약") || text.includes("해열제") || text.includes("진통제") || text.includes("소화제") || 
@@ -583,7 +583,7 @@
     if (text.includes("밴드") || text.includes("bandaid") || text.includes("반창고") || text.includes("후시딘") || 
         text.includes("마데카솔") || text.includes("연고") || text.includes("파스")) return "🩹";
 
-    // 2. 커피 / 차 / 음료 브랜드
+    // 2. 커피 / 차 / 음료
     if (text.includes("스타벅스") || text.includes("starbucks") || text.includes("커피") || text.includes("coffee") || 
         text.includes("라떼") || text.includes("네스프레소") || text.includes("원두") || text.includes("맥심") || text.includes("카누")) return "☕";
     if (text.includes("콜라") || text.includes("coke") || text.includes("coca") || text.includes("사이다") || 
@@ -595,14 +595,14 @@
     if (text.includes("위스키") || text.includes("whisky") || text.includes("whiskey") || text.includes("소주") || text.includes("사케")) return "🥃";
     if (text.includes("생수") || text.includes("water") || text.includes("삼다수") || text.includes("에비앙") || text.includes("탄산수") || text.includes("페리에")) return "💧";
 
-    // 3. 라면 / 면 / 쌀 / 간편식 브랜드
+    // 3. 라면 / 면 / 쌀 / 간편식
     if (text.includes("신라면") || text.includes("진라면") || text.includes("불닭") || text.includes("너구리") || 
         text.includes("짜파게티") || text.includes("안성탕면") || text.includes("비빔면") || text.includes("라면") || 
         text.includes("ramen") || text.includes("noodle") || text.includes("국수") || text.includes("파스타") || 
         text.includes("우동") || text.includes("스파게티")) return "🍜";
     if (text.includes("햇반") || text.includes("오뚜기밥") || text.includes("쌀") || text.includes("rice") || text.includes("현미") || text.includes("즉석밥")) return "🍚";
 
-    // 4. 과자 / 시리얼 / 디저트 브랜드
+    // 4. 과자 / 시리얼 / 디저트
     if (text.includes("오레오") || text.includes("oreo") || text.includes("프링글스") || text.includes("pringles") || 
         text.includes("도리토스") || text.includes("doritos") || text.includes("감자칩") || text.includes("칩") || 
         text.includes("과자") || text.includes("쿠키") || text.includes("cookie") || text.includes("스낵")) return "🍪";
@@ -610,12 +610,12 @@
     if (text.includes("하겐다즈") || text.includes("아이스크림") || text.includes("ice cream") || text.includes("빙수")) return "🍦";
     if (text.includes("시리얼") || text.includes("cereal") || text.includes("그래놀라") || text.includes("콘푸로스트") || text.includes("켈로그") || text.includes("요거트") || text.includes("yogurt")) return "🥣";
 
-    // 5. 가공육 / 소시지 / 소스류
+    // 5. 가공육 / 소스
     if (text.includes("스팸") || text.includes("spam") || text.includes("소세지") || text.includes("소시지") || text.includes("sausage") || text.includes("비엔나") || text.includes("핫도그")) return "🌭";
     if (text.includes("케첩") || text.includes("ketchup") || text.includes("하인즈") || text.includes("마요네즈") || text.includes("mayo") || text.includes("머스타드") || text.includes("잼") || text.includes("꿀") || text.includes("nutella") || text.includes("누텔라")) return "🍯";
     if (text.includes("올리브유") || text.includes("참기름") || text.includes("식용유") || text.includes("들기름") || text.includes("오일") || text.includes("oil")) return "🫒";
 
-    // 6. 과일류
+    // 6. 과일
     if (text.includes("사과") || text.includes("apple")) return "🍎";
     if (text.includes("바나나") || text.includes("banana")) return "🍌";
     if (text.includes("딸기") || text.includes("strawberry")) return "🍓";
@@ -631,7 +631,7 @@
     if (text.includes("망고") || text.includes("mango")) return "🥭";
     if (text.includes("아보카도") || text.includes("avocado")) return "🥑";
 
-    // 7. 채소 / 야채류
+    // 7. 채소
     if (text.includes("토마토") || text.includes("tomato")) return "🍅";
     if (text.includes("오이") || text.includes("cucumber")) return "🥒";
     if (text.includes("당근") || text.includes("carrot")) return "🥕";
@@ -651,7 +651,7 @@
     if (text.includes("닭") || text.includes("치킨") || text.includes("닭가슴살") || text.includes("chicken")) return "🍗";
     if (text.includes("생선") || text.includes("연어") || text.includes("고등어") || text.includes("참치") || text.includes("갈치") || text.includes("fish") || text.includes("salmon")) return "🐟";
     if (text.includes("새우") || text.includes("shrimp")) return "🍤";
-    if (text.includes("게") || text.includes("크랩") || text.includes("crab")) return "🦀";
+    if (text.includes("게") || text.includes("크랩") || text.includes("crab") || text.includes("꽃게")) return "🦀";
     if (text.includes("오징어") || text.includes("문어") || text.includes("낙지")) return "🐙";
     if (text.includes("조개") || text.includes("굴") || text.includes("홍합")) return "🦪";
 
@@ -662,7 +662,7 @@
     if (text.includes("버터") || text.includes("butter")) return "🧈";
     if (text.includes("식빵") || text.includes("베이글") || text.includes("bread") || text.includes("빵") || text.includes("크루아상")) return "🍞";
 
-    // 10. 생활용품 / 위생 / 청소 브랜드
+    // 10. 생활용품 / 위생
     if (text.includes("휴지") || text.includes("화장지") || text.includes("키친타올") || text.includes("물티슈") || 
         text.includes("크리넥스") || text.includes("bounty") || text.includes("charmin") || text.includes("종이컵") || text.includes("봉투")) return "🧻";
     if (text.includes("다우니") || text.includes("타이드") || text.includes("세제") || text.includes("tide") || 
@@ -822,7 +822,7 @@
     currentUser = member;
     document.getElementById("page-select").style.display = "none";
     document.getElementById("page-grocery").style.display = "block";
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
     updateNavUser();
     renderApp();
   }
@@ -832,7 +832,7 @@
     targetLockedMember = null;
     document.getElementById("page-grocery").style.display = "none";
     document.getElementById("page-select").style.display = "flex";
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: 'instant' });
     renderMembers();
   }
 
