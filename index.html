@@ -383,7 +383,7 @@
       background: #f4ede4; color: #735438; padding: 1px 6px; border-radius: 6px; font-weight: 600; font-size: 10.5px;
     }
 
-    /* 가격 태그 및 편집 */
+    /* 가격 태그 */
     .price-pill {
       background: #fff6ee;
       border: 1px solid #fedcc1;
@@ -546,7 +546,7 @@
     <div class="list-box">
       <div class="list-header">
         <h3>구매할 품목 <span id="pendingBadge" class="badge-count">0</span></h3>
-        <span class="sync-status">● 실시간 자동 계산 켜짐</span>
+        <span class="sync-status">● 실시간 수량 자동 합산 켜짐</span>
       </div>
       <div id="pendingListContainer"></div>
     </div>
@@ -594,7 +594,7 @@
   const membersRef = db.ref("members");
   const itemsRef = db.ref("items");
 
-  // 3. 지능형 단어 사전 & 마트별 가격 엔진 (Item Dictionary & Store Catalogs)
+  // 3. 지능형 단어 사전 & 마트별 가격 엔진
   const ITEM_DICTIONARY = {
     "귤": { en: "Mandarins / Clementines", cat: "채소·과일", defaultPrices: { "Costco": 7.99, "Trader Joe's": 3.99, "HEB": 4.48, "H-Mart": 5.99, "Kroger": 4.99, "default": 4.99 }, unit: "bag" },
     "사과": { en: "Fuji / Gala Apples", cat: "채소·과일", defaultPrices: { "Costco": 9.99, "Trader Joe's": 0.99, "HEB": 1.48, "H-Mart": 2.29, "Kroger": 1.99, "default": 2.49 }, unit: "lb/bag" },
@@ -634,13 +634,25 @@
         };
       }
     }
-    // 사전에 없는 경우 기본 추정치
     return {
       matchedEn: "",
       suggestedCat: "기타",
       price: 4.50,
       unit: "ea"
     };
+  }
+
+  // 수량 및 단위 파싱 함수 ("2개" -> { val: 2, unit: "개" })
+  function parseQuantity(raw) {
+    if (!raw) return { val: 1, unit: "" };
+    const str = String(raw).trim();
+    const match = str.match(/^([0-9]+(?:\.[0-9]+)?)\s*(.*)$/);
+    if (match) {
+      return { val: parseFloat(match[1]), unit: match[2] || "" };
+    }
+    const num = parseFloat(str);
+    if (!isNaN(num)) return { val: num, unit: "" };
+    return { val: 1, unit: str };
   }
 
   const STORES = ["ALL", "Costco", "HEB", "Trader Joe's", "H-Mart", "Kroger", "기타", "상관없음"];
@@ -844,7 +856,7 @@
     return members.find(m => m.name === name) || { name: name, emoji: "👤", bg: "#7d8b82" };
   }
 
-  // 품목 추가 (자동 영문 매칭 + 단가 자동 계산 탑재)
+  // 핵심: 품목 추가 & 중복 수량 자동 합산 (Merge)
   function addItem(customName = null, customCat = null, customStore = null, customPrice = null) {
     let name = customName;
     let qty = "";
@@ -864,7 +876,6 @@
 
       if (!name) return;
 
-      // 매칭 엔진 가동
       const match = matchStoreProduct(name, store);
       cat = (catSelect.value === "채소·과일" && match.suggestedCat) ? match.suggestedCat : catSelect.value;
       price = match.price;
@@ -875,14 +886,49 @@
     }
 
     const matchedData = matchStoreProduct(name, store);
+    const resolvedStore = store || "Costco";
+    const resolvedCat = cat || matchedData.suggestedCat;
+    const resolvedPrice = Number(price !== null ? price : matchedData.price);
+
+    // 장바구니 미완료(pending) 중 동일한 품목명 & 동일한 상점 확인
+    const normalizedInput = name.trim().toLowerCase();
+    const existing = items.find(it => 
+      !it.completed && 
+      it.store === resolvedStore && 
+      it.name.trim().toLowerCase() === normalizedInput
+    );
+
+    if (existing) {
+      // 1. 수량 합산 로직 (예: "1" + "2개" => "3개")
+      const pOld = parseQuantity(existing.qty);
+      const pNew = parseQuantity(qty);
+      const sumVal = pOld.val + pNew.val;
+      const combinedUnit = pNew.unit || pOld.unit || "개";
+      const newQtyDisplay = combinedUnit ? `${sumVal}${combinedUnit}` : `${sumVal}`;
+
+      // 2. 단가 기반 총액 합산
+      const unitPrice = resolvedPrice || (existing.price / Math.max(pOld.val, 1)) || 0;
+      const newTotalPrice = Math.round(unitPrice * sumVal * 100) / 100;
+
+      itemsRef.child(existing.key).update({
+        qty: newQtyDisplay,
+        price: newTotalPrice,
+        addedBy: currentUser ? currentUser.name : existing.addedBy
+      });
+      return;
+    }
+
+    // 신규 품목 추가
+    const pNew = parseQuantity(qty);
+    const initialPrice = Math.round(resolvedPrice * (pNew.val || 1) * 100) / 100;
 
     itemsRef.push({
       name: name,
       enMatch: matchedData.matchedEn || "",
       qty: qty,
-      cat: cat || matchedData.suggestedCat,
-      store: store || "Costco",
-      price: Number(price || matchedData.price || 0),
+      cat: resolvedCat,
+      store: resolvedStore,
+      price: initialPrice,
       addedBy: currentUser ? currentUser.name : "사용자",
       completedBy: null,
       completed: false,
@@ -902,7 +948,7 @@
   }
 
   function editItemPrice(key, currentPrice) {
-    const newPrice = prompt("실제 마트 결제 금액(단가)을 입력하세요 ($):", currentPrice || "0.00");
+    const newPrice = prompt("실제 마트 결제 금액(총액)을 입력하세요 ($):", currentPrice || "0.00");
     if (newPrice !== null) {
       const parsed = parseFloat(newPrice);
       if (!isNaN(parsed)) {
@@ -932,7 +978,6 @@
     container.innerHTML = "";
 
     if (sortedNames.length === 0) {
-      // 기본 프리셋 노출
       const presets = ["귤", "사과", "삼겹살", "계란", "우유"];
       presets.forEach(pName => {
         const info = matchStoreProduct(pName, "Costco");
@@ -992,7 +1037,7 @@
   function createItemRow(item) {
     const author = getMemberInfo(item.addedBy);
     const icon = getItemEmoji(item.name, item.cat);
-    const qtyDisplay = item.qty ? ` (${item.qty})` : "";
+    const qtyDisplay = item.qty ? ` <span style="color: #4a7558; font-weight:800;">(${item.qty})</span>` : "";
     const storeTag = (item.store && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
     const enLabel = item.enMatch ? `<span class="item-match-en">(${item.enMatch})</span>` : "";
     const priceDisplay = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
@@ -1008,7 +1053,7 @@
           <div class="item-sub-tags">
             <span class="item-cat-text">${item.cat}</span>
             ${storeTag}
-            <span class="price-pill" onclick="editItemPrice('${item.key}', ${item.price || 0})" title="금액 수정">${priceDisplay} <span class="price-unit">✏️</span></span>
+            <span class="price-pill" onclick="editItemPrice('${item.key}', ${item.price || 0})" title="금액 직접 수정">${priceDisplay} <span class="price-unit">✏️</span></span>
           </div>
         </div>
       </div>
@@ -1033,7 +1078,6 @@
     const pendingItems = items.filter(it => !it.completed);
     const completedItems = items.filter(it => it.completed);
 
-    // 총 예상 금액 계산
     const pendingTotalCost = pendingItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
     const completedTotalCost = completedItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
 
@@ -1104,6 +1148,7 @@
         const icon = getItemEmoji(item.name, item.cat);
         const storeTag = (item.store && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
         const priceVal = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
+        const qtyDisplay = item.qty ? ` (${item.qty})` : "";
 
         const li = document.createElement("li");
         li.className = "item-row completed-item";
@@ -1112,7 +1157,7 @@
             <button class="btn-restore" onclick="toggleComplete('${item.key}', ${item.completed})" title="다시 목록으로 복구">↩</button>
             <span class="item-icon" style="opacity: 0.7;">${icon}</span>
             <div class="item-text-wrap">
-              <span class="item-name-text">${item.name}</span>
+              <span class="item-name-text">${item.name}${qtyDisplay}</span>
               <div class="item-sub-tags">
                 ${storeTag}
                 <span class="price-pill" style="opacity: 0.7;">${priceVal}</span>
