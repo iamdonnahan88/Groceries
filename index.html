@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>오늘 뭐 사지👀</title>
   
   <!-- 가독성 높은 프리텐다드(Pretendard) 웹폰트 로드 -->
@@ -33,40 +33,64 @@
       -webkit-tap-highlight-color: transparent; 
       letter-spacing: -0.02em;
     }
-    body {
+    html, body {
+      height: 100%;
       background-color: var(--bg-cream);
-      min-height: 100vh;
-      min-height: 100dvh; /* 모바일 동적 화면 높이 완벽 대응 */
+    }
+    body {
       color: var(--text-dark);
-      padding: 16px;
+      padding: 10px 12px;
       display: flex;
       justify-content: center;
-      align-items: center; /* 화면 정가운데 배치로 위아래 공백 완벽 균등 */
+      align-items: center;
+      overflow-x: hidden;
     }
     .container { 
       width: 100%; 
-      max-width: 680px; 
+      max-width: 500px;
+      height: 100%;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
 
-    /* 페이지 1: 사용자 선택 */
+    /* 페이지 1: 화면 전체를 꽉 채우는 프레임 테두리 */
     #page-select {
       background: #fdfbf7;
-      border: 1px solid var(--border-soft);
+      border: 1.5px solid var(--border-soft);
       border-radius: 28px;
-      padding: 30px 22px 24px;
+      padding: 22px 18px 18px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-      margin: 0 auto;
       width: 100%;
+      height: calc(100dvh - 20px); /* 폰 화면 전체를 프레임으로 꽉 채움 */
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between; /* 상단 로고, 중앙 본문, 하단 문구가 조화롭게 분배 */
     }
-    .select-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .basket-box { width: 44px; height: 44px; background: #eaf0e8; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-    .sub-brand { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: #a48771; font-family: "Corbel", sans-serif; }
-    .select-title-box { text-align: center; margin-bottom: 22px; }
+
+    .select-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      width: 100%;
+      flex-shrink: 0;
+    }
+    .basket-box { width: 42px; height: 42px; background: #eaf0e8; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .sub-brand { font-size: 11.5px; font-weight: 700; letter-spacing: 1.5px; color: #a48771; font-family: "Corbel", sans-serif; }
+
+    /* 중앙 정렬 콘텐츠 묶음 */
+    .select-body-center {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin: auto 0; /* 테두리 안에서 완벽한 수직 중앙 정렬 */
+    }
+
+    .select-title-box { text-align: center; margin-bottom: 20px; width: 100%; }
     
-    /* WELCOME 뱃지: Corbel 폰트 */
+    /* WELCOME 뱃지 */
     .badge-sub { 
       font-size: 13px; 
       font-weight: 700; 
@@ -77,8 +101,8 @@
       letter-spacing: 2px; 
     }
     
-    .select-title-box h1 { font-size: 27px; line-height: 1.32; margin-bottom: 6px; font-weight: 800; }
-    .select-title-box p { color: var(--text-muted); font-size: 14px; }
+    .select-title-box h1 { font-size: 26px; line-height: 1.32; margin-bottom: 6px; font-weight: 800; }
+    .select-title-box p { color: var(--text-muted); font-size: 13.5px; }
 
     /* 입력 래퍼: 라인 안에 쏙 들어가고 가운데 정렬 */
     .member-input-wrap { 
@@ -87,9 +111,9 @@
       background: #f3eee5; 
       padding: 5px; 
       border-radius: 12px; 
-      margin: 0 auto 20px; 
+      margin-bottom: 18px; 
       width: 100%; 
-      max-width: 420px; 
+      max-width: 360px; 
       align-items: center;
     }
     .member-input-wrap input { 
@@ -106,7 +130,7 @@
       background: var(--primary-green); 
       color: white; 
       border: none; 
-      padding: 0 16px; 
+      padding: 0 15px; 
       height: 38px; 
       border-radius: 8px; 
       font-weight: 700; 
@@ -116,30 +140,36 @@
       font-size: 13.5px;
     }
 
-    .members-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 18px; }
+    .members-grid { 
+      display: grid; 
+      grid-template-columns: repeat(2, 1fr); 
+      gap: 12px; 
+      width: 100%;
+      max-width: 380px;
+    }
     .user-card {
       background: #ffffff;
       border: 1.5px solid #ece4d8;
       border-radius: 20px;
-      padding: 20px 14px;
+      padding: 18px 12px;
       text-align: center;
       cursor: pointer;
       position: relative;
       transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s;
     }
     .user-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.05); }
-    .user-avatar { width: 62px; height: 62px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 8px; }
-    .user-card-name { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
-    .user-card-sub { font-size: 13px; color: #a0a0a0; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .user-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 8px; }
+    .user-card-name { font-size: 15.5px; font-weight: 800; margin-bottom: 4px; }
+    .user-card-sub { font-size: 12.5px; color: #a0a0a0; display: flex; align-items: center; justify-content: center; gap: 5px; }
     
     .pin-inline-wrap {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }
     .pin-mini-dot {
-      width: 13px;
-      height: 13px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background-color: var(--pastel-dot-empty);
       border: 1.5px solid #dfcfc4;
@@ -172,10 +202,10 @@
 
     .btn-member-del { position: absolute; top: 10px; right: 12px; background: none; border: none; font-size: 18px; color: #ccc; cursor: pointer; }
     .btn-member-del:hover { color: #e53e3e; }
-    .slogan { text-align: center; font-size: 12.5px; font-style: italic; color: #9c9186; }
+    .slogan { text-align: center; font-size: 12px; font-style: italic; color: #9c9186; width: 100%; flex-shrink: 0; }
 
     /* 페이지 2: 장보기 메인 */
-    #page-grocery { display: none; width: 100%; }
+    #page-grocery { display: none; width: 100%; padding-bottom: 30px; }
     .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .brand-group { display: flex; align-items: center; gap: 12px; }
     .brand-group h2 { font-size: 18px; font-weight: 800; color: #1e3324; }
@@ -189,7 +219,7 @@
 
     .hero-grocery { margin-bottom: 22px; }
     .hero-grocery .tag { font-size: 13px; color: var(--primary-green); font-weight: 700; }
-    .hero-grocery h1 { font-size: 30px; font-weight: 800; margin: 6px 0 10px; }
+    .hero-grocery h1 { font-size: 28px; font-weight: 800; margin: 6px 0 10px; }
     .progress-bar-wrap { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
     .remaining-text { font-size: 14px; color: var(--text-muted); }
     .bar-container { display: flex; align-items: center; gap: 10px; }
@@ -199,13 +229,13 @@
 
     /* 입력창 */
     .add-box {
-      background: #ffffff; border-radius: 18px; padding: 20px;
+      background: #ffffff; border-radius: 18px; padding: 18px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.03); border: 1px solid var(--border-light);
-      margin-bottom: 28px;
+      margin-bottom: 26px;
     }
     .input-row-1 { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f0f0ed; padding-bottom: 12px; margin-bottom: 12px; }
     .input-row-1 .plus { font-size: 24px; color: var(--primary-green); font-weight: 300; }
-    .input-row-1 input { flex: 1; border: none; outline: none; font-size: 16px; color: var(--text-dark); }
+    .input-row-1 input { flex: 1; border: none; outline: none; font-size: 15px; color: var(--text-dark); }
     .input-row-1 input::placeholder { color: #b4bdb6; }
     
     .input-row-2 { 
@@ -217,7 +247,7 @@
     .input-qty { 
       width: 48px; 
       min-width: 44px; 
-      padding: 10px 4px; 
+      padding: 9px 4px; 
       border: 1px solid #e1ded6; 
       border-radius: 10px; 
       outline: none; 
@@ -228,7 +258,7 @@
     .select-box { 
       flex: 1; 
       min-width: 0; 
-      padding: 10px 4px; 
+      padding: 9px 4px; 
       border: 1px solid #e1ded6; 
       border-radius: 10px; 
       outline: none; 
@@ -240,7 +270,7 @@
       background: var(--primary-green); 
       color: white; 
       border: none; 
-      padding: 10px 12px; 
+      padding: 9px 12px; 
       border-radius: 10px; 
       font-weight: 700; 
       font-size: 13px; 
@@ -259,13 +289,13 @@
     .quick-grid::-webkit-scrollbar { height: 4px; }
     .quick-grid::-webkit-scrollbar-thumb { background: #dedad2; border-radius: 4px; }
     .quick-card {
-      min-width: 100px; background: #ffffff; border: 1px solid var(--border-light);
-      border-radius: 14px; padding: 14px 10px; text-align: center; cursor: pointer;
+      min-width: 95px; background: #ffffff; border: 1px solid var(--border-light);
+      border-radius: 14px; padding: 12px 8px; text-align: center; cursor: pointer;
       flex-shrink: 0; transition: transform 0.15s;
     }
     .quick-card:hover { transform: translateY(-2px); border-color: var(--primary-green); }
-    .quick-card .emoji { font-size: 26px; display: block; margin-bottom: 6px; }
-    .quick-card .name { font-size: 14px; font-weight: 700; display: block; margin-bottom: 2px; }
+    .quick-card .emoji { font-size: 24px; display: block; margin-bottom: 4px; }
+    .quick-card .name { font-size: 13.5px; font-weight: 700; display: block; margin-bottom: 2px; }
     .quick-card .action { font-size: 11px; color: #a4a4a4; }
 
     /* Store별 필터 탭 */
@@ -358,32 +388,35 @@
 
 <div class="container">
 
-  <!-- 화면 1: 가족 구성원 선택 (상하 여백 완전 균등 중앙 정렬) -->
+  <!-- 화면 1: 가족 구성원 선택 (화면 전체 프레임 + 테두리 안 완벽 중앙 정렬) -->
   <div id="page-select">
+    <!-- 상단 헤더 -->
     <div class="select-header">
       <div class="basket-box">🧺</div>
       <span class="sub-brand">OUR HOME · OUR LIST</span>
     </div>
 
-    <div class="select-title-box">
-      <span class="badge-sub">WELCOME</span>
-      <h1>오늘은 누가<br>장을 보러 가나요?</h1>
-      <p>가족 이름을 추가하세요🤍</p>
+    <!-- 중앙 콘텐츠 모음 -->
+    <div class="select-body-center">
+      <div class="select-title-box">
+        <span class="badge-sub">WELCOME</span>
+        <h1>오늘은 누가<br>장을 보러 가나요?</h1>
+        <p>가족 이름을 추가하세요🤍</p>
+      </div>
+
+      <div class="member-input-wrap">
+        <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: Donna, Sia, Sian)" onkeypress="if(event.key==='Enter') addMember()">
+        <button type="button" class="btn-member-add" onclick="addMember()">추가</button>
+      </div>
+
+      <div id="membersContainer" class="members-grid"></div>
     </div>
 
-    <!-- 라인 안쪽 중앙 정렬된 입력창 -->
-    <div class="member-input-wrap">
-      <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: Donna, Sia, Sian)" onkeypress="if(event.key==='Enter') addMember()">
-      <button type="button" class="btn-member-add" onclick="addMember()">추가</button>
-    </div>
-
-    <!-- 카드 목록 -->
-    <div id="membersContainer" class="members-grid"></div>
+    <!-- 하단 문구 -->
+    <p class="slogan">우리집 장바구니 LIVE 🌿</p>
 
     <!-- 키보드 호출용 숨김 입력창 -->
     <input type="tel" id="hiddenPinInput" maxlength="2" inputmode="numeric" pattern="[0-9]*" oninput="onPinInputChange(this)">
-
-    <p class="slogan">우리집 장바구니 LIVE 🌿</p>
   </div>
 
   <!-- 화면 2: 장보기 메인 -->
@@ -666,7 +699,7 @@
 
     if (members.length === 0) {
       container.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 32px 10px; color: #a49b8f; background: #faf7f0; border-radius: 16px; border: 1px dashed #dcd3c5;">
+        <div style="grid-column: 1 / -1; text-align: center; padding: 24px 10px; color: #a49b8f; background: #faf7f0; border-radius: 16px; border: 1px dashed #dcd3c5; font-size: 13px;">
           등록된 가족 구성원이 없습니다.<br>위 입력창에서 이름을 추가해 보세요.
         </div>
       `;
@@ -795,7 +828,7 @@
     currentUser = null;
     targetLockedMember = null;
     document.getElementById("page-grocery").style.display = "none";
-    document.getElementById("page-select").style.display = "block";
+    document.getElementById("page-select").style.display = "flex";
     window.scrollTo(0, 0);
     renderMembers();
   }
