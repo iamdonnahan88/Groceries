@@ -166,10 +166,47 @@
     .input-row-1 input { flex: 1; border: none; outline: none; font-size: 16px; color: var(--text-dark); }
     .input-row-1 input::placeholder { color: #b4bdb6; }
     
-    .input-row-2 { display: flex; gap: 8px; flex-wrap: wrap; }
-    .input-qty { flex: 1; min-width: 90px; padding: 11px 12px; border: 1px solid #e1ded6; border-radius: 10px; outline: none; font-size: 14px; }
-    .select-box { flex: 1.2; min-width: 110px; padding: 11px 10px; border: 1px solid #e1ded6; border-radius: 10px; outline: none; font-size: 14px; background: #fff; }
-    .btn-submit { background: var(--primary-green); color: white; border: none; padding: 11px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+    /* 두 번째 줄: 수량, 카테고리, Store, 버튼을 줄바꿈 없이 한 줄에 배치 */
+    .input-row-2 { 
+      display: flex; 
+      gap: 5px; 
+      align-items: center; 
+      flex-wrap: nowrap; 
+    }
+    .input-qty { 
+      width: 48px; 
+      min-width: 44px; 
+      padding: 10px 4px; 
+      border: 1px solid #e1ded6; 
+      border-radius: 10px; 
+      outline: none; 
+      font-size: 13px; 
+      text-align: center; 
+      flex-shrink: 0; 
+    }
+    .select-box { 
+      flex: 1; 
+      min-width: 0; 
+      padding: 10px 4px; 
+      border: 1px solid #e1ded6; 
+      border-radius: 10px; 
+      outline: none; 
+      font-size: 13px; 
+      background: #fff; 
+      text-overflow: ellipsis; 
+    }
+    .btn-submit { 
+      background: var(--primary-green); 
+      color: white; 
+      border: none; 
+      padding: 10px 11px; 
+      border-radius: 10px; 
+      font-weight: 700; 
+      font-size: 13px; 
+      cursor: pointer; 
+      flex-shrink: 0; 
+      white-space: nowrap; 
+    }
     .btn-submit:hover { background: var(--primary-green-hover); }
 
     /* 빠른 추가 */
@@ -345,7 +382,7 @@
         <input type="text" id="itemNameInput" placeholder="타이레놀, 스타벅스 커피, 신라면..." onkeypress="if(event.key==='Enter') addItem()">
       </div>
       <div class="input-row-2">
-        <input type="text" id="itemQtyInput" class="input-qty" placeholder="수량 (선택)" onkeypress="if(event.key==='Enter') addItem()">
+        <input type="text" id="itemQtyInput" class="input-qty" placeholder="수량" onkeypress="if(event.key==='Enter') addItem()">
         
         <select id="itemCatSelect" class="select-box">
           <option value="채소·과일">채소·과일</option>
@@ -601,7 +638,6 @@
       card.className = "user-card";
       card.onclick = () => onMemberCardClick(member);
 
-      // 비밀번호가 걸려있는 멤버(Donna, Sia, Sian)는 자물쇠 + 파스텔 동그라미 2개 표시
       const subHtml = pinRequired ? `
         <span>🔒</span>
         <span class="pin-inline-wrap">
