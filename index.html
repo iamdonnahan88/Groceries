@@ -66,94 +66,52 @@
       transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s;
     }
     .user-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.05); }
-    .user-card.active-pin { border-color: var(--primary-green); background: #fbfdfa; }
     .user-avatar { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 10px; }
-    .user-card-name { font-size: 17px; font-weight: 800; margin-bottom: 3px; }
-    .user-card-sub { font-size: 12.5px; color: #a0a0a0; }
-    .btn-member-del { position: absolute; top: 10px; right: 12px; background: none; border: none; font-size: 18px; color: #ccc; cursor: pointer; }
-    .btn-member-del:hover { color: #e53e3e; }
-
-    /* 심플 파스텔 도트 + 키패드 */
-    #pinSection {
-      display: none;
-      background: #ffffff;
-      border: 1.5px solid #e3d9cc;
-      border-radius: 22px;
-      padding: 24px 20px 20px;
-      margin-bottom: 22px;
-      text-align: center;
-      box-shadow: 0 8px 24px rgba(74, 117, 88, 0.08);
-      animation: fadeInSlide 0.25s ease-out;
-    }
-    @keyframes fadeInSlide {
-      from { opacity: 0; transform: translateY(-8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .user-card-name { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+    .user-card-sub { font-size: 13px; color: #a0a0a0; display: flex; align-items: center; justify-content: center; gap: 6px; }
     
-    /* 파스텔톤 동그라미 2개 */
-    .dots-wrap {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-bottom: 18px;
+    /* 자물쇠 옆 파스텔 동그라미 2개 */
+    .pin-inline-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .pin-dot {
-      width: 22px;
-      height: 22px;
+    .pin-mini-dot {
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background-color: var(--pastel-dot-empty);
-      border: 2px solid #dfcfc4;
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1.5px solid #dfcfc4;
+      display: inline-block;
+      transition: all 0.2s ease;
     }
-    .pin-dot.filled {
+    .pin-mini-dot.filled {
       background-color: var(--pastel-dot-filled);
       border-color: var(--pastel-dot-filled);
       transform: scale(1.15);
-      box-shadow: 0 3px 8px rgba(74, 117, 88, 0.3);
     }
-    .pin-dot.shake {
-      animation: shake 0.35s ease;
+    .pin-mini-dot.shake {
+      animation: shakeDot 0.35s ease;
       background-color: #e5877f !important;
       border-color: #e5877f !important;
     }
-    @keyframes shake {
+    @keyframes shakeDot {
       0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-6px); }
-      40%, 80% { transform: translateX(6px); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
     }
 
-    /* 숫자 키패드 */
-    .numpad {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      max-width: 250px;
-      margin: 0 auto;
-    }
-    .num-btn {
-      aspect-ratio: 1.4;
-      background: #faf7f2;
-      border: 1px solid #ebdccf;
-      border-radius: 14px;
-      font-size: 19px;
-      font-weight: 700;
-      color: #3b4d40;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.12s ease;
-    }
-    .num-btn:active {
-      transform: scale(0.93);
-      background: #ebdccf;
-    }
-    .num-btn.btn-back {
-      font-size: 15px;
-      color: #938275;
-      background: #f3ece4;
+    /* 키보드 호출용 숨김 입력창 */
+    #hiddenPinInput {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+      opacity: 0;
+      pointer-events: none;
     }
 
+    .btn-member-del { position: absolute; top: 10px; right: 12px; background: none; border: none; font-size: 18px; color: #ccc; cursor: pointer; }
+    .btn-member-del:hover { color: #e53e3e; }
     .slogan { text-align: center; font-size: 13px; font-style: italic; color: #9c9186; }
 
     /* 페이지 2: 장보기 메인 */
@@ -325,28 +283,8 @@
     <!-- 카드 목록 -->
     <div id="membersContainer" class="members-grid"></div>
 
-    <!-- 텍스트 없이 동그라미 2개 + 미니 키패드만 표시되는 영역 -->
-    <div id="pinSection">
-      <div class="dots-wrap">
-        <div id="pinDot0" class="pin-dot"></div>
-        <div id="pinDot1" class="pin-dot"></div>
-      </div>
-
-      <div class="numpad">
-        <button type="button" class="num-btn" onclick="pressPin('1')">1</button>
-        <button type="button" class="num-btn" onclick="pressPin('2')">2</button>
-        <button type="button" class="num-btn" onclick="pressPin('3')">3</button>
-        <button type="button" class="num-btn" onclick="pressPin('4')">4</button>
-        <button type="button" class="num-btn" onclick="pressPin('5')">5</button>
-        <button type="button" class="num-btn" onclick="pressPin('6')">6</button>
-        <button type="button" class="num-btn" onclick="pressPin('7')">7</button>
-        <button type="button" class="num-btn" onclick="pressPin('8')">8</button>
-        <button type="button" class="num-btn" onclick="pressPin('9')">9</button>
-        <button type="button" class="num-btn btn-back" onclick="closePinSection()">취소</button>
-        <button type="button" class="num-btn" onclick="pressPin('0')">0</button>
-        <button type="button" class="num-btn btn-back" onclick="deletePin()">⌫</button>
-      </div>
-    </div>
+    <!-- 키보드 호출용 숨김 입력창 -->
+    <input type="tel" id="hiddenPinInput" maxlength="2" inputmode="numeric" pattern="[0-9]*" oninput="onPinInputChange(this)">
 
     <p class="slogan">가족 모두가 함께 쓰는 실시간 장보기 🌿</p>
   </div>
@@ -386,7 +324,7 @@
     <div class="add-box">
       <div class="input-row-1">
         <span class="plus">＋</span>
-        <input type="text" id="itemNameInput" placeholder="어린이 타이레놀, 우유, 바나나..." onkeypress="if(event.key==='Enter') addItem()">
+        <input type="text" id="itemNameInput" placeholder="타이레놀, 스타벅스 커피, 신라면..." onkeypress="if(event.key==='Enter') addItem()">
       </div>
       <div class="input-row-2">
         <input type="text" id="itemQtyInput" class="input-qty" placeholder="수량 (선택)" onkeypress="if(event.key==='Enter') addItem()">
@@ -474,9 +412,7 @@
   let members = [];
   let items = [];
   let currentUser = null;
-
-  let currentPinInput = "";
-  let pendingDonnaMember = null;
+  let targetDonnaMember = null;
 
   const categoryIcons = {
     "채소·과일": "🥬",
@@ -490,9 +426,48 @@
   function getItemEmoji(name, cat) {
     const text = name.toLowerCase();
 
-    if (text.includes("타이레놀") || text.includes("tylenol") || text.includes("애드빌") || text.includes("advil") || text.includes("약") || text.includes("비타민") || text.includes("유산균") || text.includes("영양제")) return "💊";
-    if (text.includes("밴드") || text.includes("반창고") || text.includes("연고")) return "🩹";
+    // 1. 의약품 / 건강 / 상비약 브랜드
+    if (text.includes("타이레놀") || text.includes("tylenol") || text.includes("애드빌") || text.includes("advil") || 
+        text.includes("모트린") || text.includes("motrin") || text.includes("알레그라") || text.includes("지르텍") || 
+        text.includes("감기약") || text.includes("해열제") || text.includes("진통제") || text.includes("소화제") || 
+        text.includes("비타민") || text.includes("vitamin") || text.includes("유산균") || text.includes("오메가") || 
+        text.includes("영양제") || text.includes("약")) return "💊";
+    if (text.includes("밴드") || text.includes("bandaid") || text.includes("반창고") || text.includes("후시딘") || 
+        text.includes("마데카솔") || text.includes("연고") || text.includes("파스")) return "🩹";
 
+    // 2. 커피 / 차 / 음료 브랜드
+    if (text.includes("스타벅스") || text.includes("starbucks") || text.includes("커피") || text.includes("coffee") || 
+        text.includes("라떼") || text.includes("네스프레소") || text.includes("원두") || text.includes("맥심") || text.includes("카누")) return "☕";
+    if (text.includes("콜라") || text.includes("coke") || text.includes("coca") || text.includes("사이다") || 
+        text.includes("스프라이트") || text.includes("sprite") || text.includes("펩시") || text.includes("pepsi") || 
+        text.includes("탄산") || text.includes("소다") || text.includes("환타")) return "🥤";
+    if (text.includes("주스") || text.includes("juice") || text.includes("오렌지주스") || text.includes("사과주스")) return "🧃";
+    if (text.includes("맥주") || text.includes("beer") || text.includes("하이네켄") || text.includes("코로나") || text.includes("아사히") || text.includes("카스")) return "🍺";
+    if (text.includes("와인") || text.includes("wine") || text.includes("샤도네이") || text.includes("까베르네")) return "🍷";
+    if (text.includes("위스키") || text.includes("whisky") || text.includes("whiskey") || text.includes("소주") || text.includes("사케")) return "🥃";
+    if (text.includes("생수") || text.includes("water") || text.includes("삼다수") || text.includes("에비앙") || text.includes("탄산수") || text.includes("페리에")) return "💧";
+
+    // 3. 라면 / 면 / 쌀 / 간편식 브랜드
+    if (text.includes("신라면") || text.includes("진라면") || text.includes("불닭") || text.includes("너구리") || 
+        text.includes("짜파게티") || text.includes("안성탕면") || text.includes("비빔면") || text.includes("라면") || 
+        text.includes("ramen") || text.includes("noodle") || text.includes("국수") || text.includes("파스타") || 
+        text.includes("우동") || text.includes("스파게티")) return "🍜";
+    if (text.includes("햇반") || text.includes("오뚜기밥") || text.includes("쌀") || text.includes("rice") || text.includes("현미") || text.includes("즉석밥")) return "🍚";
+
+    // 4. 과자 / 시리얼 / 디저트 브랜드
+    if (text.includes("오레오") || text.includes("oreo") || text.includes("프링글스") || text.includes("pringles") || 
+        text.includes("도리토스") || text.includes("doritos") || text.includes("감자칩") || text.includes("칩") || 
+        text.includes("과자") || text.includes("쿠키") || text.includes("cookie") || text.includes("스낵")) return "🍪";
+    if (text.includes("초콜릿") || text.includes("chocolate") || text.includes("엠앤엔") || text.includes("킷캣") || text.includes("페레로") || text.includes("고디바")) return "🍫";
+    if (text.includes("하겐다즈") || text.includes("아이스크림") || text.includes("ice cream") || text.includes("빙수")) return "🍦";
+    if (text.includes("시리얼") || text.includes("cereal") || text.includes("그래놀라") || text.includes("콘푸로스트") || text.includes("켈로그") || text.includes("요거트") || text.includes("yogurt")) return "🥣";
+
+    // 5. 가공육 / 소시지 / 소스류
+    if (text.includes("스팸") || text.includes("spam") || text.includes("소세지") || text.includes("소시지") || text.includes("sausage") || text.includes("비엔나") || text.includes("핫도그")) return "🌭";
+    if (text.includes("케첩") || text.includes("ketchup") || text.includes("하인즈") || text.includes("마요네즈") || text.includes("mayo") || text.includes("머스타드") || text.includes("잼") || text.includes("꿀") || text.includes("nutella") || text.includes("누텔라")) return "🍯";
+    if (text.includes("올리브유") || text.includes("참기름") || text.includes("식용유") || text.includes("들기름") || text.includes("오일") || text.includes("oil")) return "🫒";
+
+    // 6. 과일류
     if (text.includes("사과") || text.includes("apple")) return "🍎";
     if (text.includes("바나나") || text.includes("banana")) return "🍌";
     if (text.includes("딸기") || text.includes("strawberry")) return "🍓";
@@ -506,10 +481,11 @@
     if (text.includes("키위") || text.includes("kiwi")) return "🥝";
     if (text.includes("파인애플") || text.includes("pineapple")) return "🍍";
     if (text.includes("망고") || text.includes("mango")) return "🥭";
+    if (text.includes("아보카도") || text.includes("avocado")) return "🥑";
 
+    // 7. 채소 / 야채류
     if (text.includes("토마토") || text.includes("tomato")) return "🍅";
     if (text.includes("오이") || text.includes("cucumber")) return "🥒";
-    if (text.includes("아보카도") || text.includes("avocado")) return "🥑";
     if (text.includes("당근") || text.includes("carrot")) return "🥕";
     if (text.includes("양파") || text.includes("onion")) return "🧅";
     if (text.includes("마늘") || text.includes("garlic")) return "🧄";
@@ -519,33 +495,35 @@
     if (text.includes("옥수수") || text.includes("corn")) return "🌽";
     if (text.includes("브로콜리") || text.includes("broccoli")) return "🥦";
     if (text.includes("고추") || text.includes("pepper")) return "🌶️";
-    if (text.includes("파") || text.includes("상추") || text.includes("샐러드") || text.includes("배추") || text.includes("시금치")) return "🥬";
+    if (text.includes("파") || text.includes("상추") || text.includes("샐러드") || text.includes("배추") || text.includes("시금치") || text.includes("깻잎")) return "🥬";
 
-    if (text.includes("소고기") || text.includes("비프") || text.includes("스테이크") || text.includes("beef") || text.includes("steak") || text.includes("고기")) return "🥩";
-    if (text.includes("돼지") || text.includes("삼겹살") || text.includes("베이컨") || text.includes("목살") || text.includes("pork")) return "🥓";
-    if (text.includes("닭") || text.includes("치킨") || text.includes("닭가슴살") || text.includes("chicken")) return "🍗";
-    if (text.includes("소시지") || text.includes("소세지") || text.includes("sausage") || text.includes("스팸")) return "🌭";
-    if (text.includes("생선") || text.includes("연어") || text.includes("고등어") || text.includes("참치") || text.includes("fish")) return "🐟";
+    // 8. 정육 / 수산
+    if (text.includes("소고기") || text.includes("비프") || text.includes("스테이크") || text.includes("beef") || text.includes("steak") || text.includes("갈비") || text.includes("불고기") || text.includes("고기")) return "🥩";
+    if (text.includes("돼지") || text.includes("삼겹살") || text.includes("베이컨") || text.includes("목살") || text.includes("pork") || text.includes("bacon")) return "🥓";
+    if (text.includes("닭") || text.includes("치킨") || text.includes("닭가슴살") || text.includes("chicken") || text.includes("윙")) return "🍗";
+    if (text.includes("생선") || text.includes("연어") || text.includes("고등어") || text.includes("참치") || text.includes("갈치") || text.includes("fish") || text.includes("salmon")) return "🐟";
     if (text.includes("새우") || text.includes("shrimp")) return "🍤";
-    if (text.includes("게") || text.includes("크랩") || text.includes("crab")) return "🦀";
-    if (text.includes("오징어") || text.includes("문어")) return "🐙";
-    if (text.includes("조개") || text.includes("굴")) return "🦪";
+    if (text.includes("게") || text.includes("크랩") || text.includes("crab") || text.includes("꽃게")) return "🦀";
+    if (text.includes("오징어") || text.includes("문어") || text.includes("낙지")) return "🐙";
+    if (text.includes("조개") || text.includes("굴") || text.includes("홍합")) return "🦪";
 
-    if (text.includes("우유") || text.includes("milk")) return "🥛";
+    // 9. 유제품 / 베이커리
+    if (text.includes("우유") || text.includes("milk") || text.includes("두유")) return "🥛";
     if (text.includes("치즈") || text.includes("cheese")) return "🧀";
     if (text.includes("달걀") || text.includes("계란") || text.includes("egg")) return "🥚";
     if (text.includes("버터") || text.includes("butter")) return "🧈";
-    if (text.includes("식빵") || text.includes("베이글") || text.includes("bread") || text.includes("빵")) return "🍞";
-    if (text.includes("라면") || text.includes("국수") || text.includes("면") || text.includes("파스타") || text.includes("noodle")) return "🍜";
-    if (text.includes("밥") || text.includes("햇반") || text.includes("쌀") || text.includes("rice")) return "🍚";
-    if (text.includes("물") || text.includes("생수") || text.includes("water")) return "💧";
-    if (text.includes("주스") || text.includes("음료") || text.includes("juice")) return "🧃";
-    if (text.includes("커피") || text.includes("coffee")) return "☕";
+    if (text.includes("식빵") || text.includes("베이글") || text.includes("bread") || text.includes("빵") || text.includes("크루아상")) return "🍞";
 
-    if (text.includes("휴지") || text.includes("화장지") || text.includes("키친타올") || text.includes("물티슈") || text.includes("봉투")) return "🧻";
-    if (text.includes("샴푸") || text.includes("린스") || text.includes("바디워시") || text.includes("세제") || text.includes("비누")) return "🧴";
-    if (text.includes("치약") || text.includes("칫솔")) return "🪥";
-    
+    // 10. 생활용품 / 위생 / 청소 브랜드
+    if (text.includes("휴지") || text.includes("화장지") || text.includes("키친타올") || text.includes("물티슈") || 
+        text.includes("크리넥스") || text.includes("bounty") || text.includes("charmin") || text.includes("종이컵") || text.includes("봉투")) return "🧻";
+    if (text.includes("다우니") || text.includes("타이드") || text.includes("세제") || text.includes("tide") || 
+        text.includes("downy") || text.includes("퐁퐁") || text.includes("주방세제") || text.includes("비누") || text.includes("soap")) return "🧼";
+    if (text.includes("샴푸") || text.includes("린스") || text.includes("바디워시") || text.includes("로션") || 
+        text.includes("페브리즈") || text.includes("헤드앤숄더") || text.includes("도브")) return "🧴";
+    if (text.includes("치약") || text.includes("칫솔") || text.includes("colgate") || text.includes("페리오") || text.includes("리스테린")) return "🪥";
+    if (text.includes("지퍼백") || text.includes("크린랩") || text.includes("호일") || text.includes("ziploc") || text.includes("호일")) return "📦";
+
     return categoryIcons[cat] || "🛒";
   }
 
@@ -587,8 +565,16 @@
     members.forEach(member => {
       const isDonna = member.name.trim().toLowerCase() === "donna";
       const card = document.createElement("div");
-      card.className = `user-card ${isDonna && pendingDonnaMember ? "active-pin" : ""}`;
+      card.className = "user-card";
       card.onclick = () => onMemberCardClick(member);
+
+      const subHtml = isDonna ? `
+        <span>🔒</span>
+        <span class="pin-inline-wrap">
+          <span id="cardDot0" class="pin-mini-dot"></span>
+          <span id="cardDot1" class="pin-mini-dot"></span>
+        </span>
+      ` : "목록 열기";
 
       card.innerHTML = `
         <button class="btn-member-del" title="삭제" onclick="deleteMember(event, '${member.key}')">×</button>
@@ -596,7 +582,7 @@
           <span>${member.emoji}</span>
         </div>
         <div class="user-card-name">${member.name}</div>
-        <div class="user-card-sub">목록 열기</div>
+        <div class="user-card-sub">${subHtml}</div>
       `;
       container.appendChild(card);
     });
@@ -626,9 +612,6 @@
       if (currentUser && currentUser.key === key) {
         currentUser = null;
       }
-      if (pendingDonnaMember && pendingDonnaMember.key === key) {
-        closePinSection();
-      }
     }
   }
 
@@ -636,67 +619,51 @@
     const isDonna = member.name.trim().toLowerCase() === "donna";
 
     if (isDonna) {
-      pendingDonnaMember = member;
-      currentPinInput = "";
-      updateDots();
-      document.getElementById("pinSection").style.display = "block";
-      renderMembers();
-      document.getElementById("pinSection").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      targetDonnaMember = member;
+      const hiddenInput = document.getElementById("hiddenPinInput");
+      hiddenInput.value = "";
+      updateCardDots("");
+      hiddenInput.focus();
     } else {
-      closePinSection();
       enterApp(member);
     }
   }
 
-  function pressPin(digit) {
-    if (currentPinInput.length >= 2) return;
-    currentPinInput += digit;
-    updateDots();
+  function onPinInputChange(input) {
+    const val = input.value;
+    updateCardDots(val);
 
-    if (currentPinInput.length === 2) {
-      setTimeout(verifyPin, 140);
+    if (val.length === 2) {
+      if (val === DONNA_PIN) {
+        input.blur();
+        const m = targetDonnaMember;
+        setTimeout(() => {
+          enterApp(m);
+        }, 150);
+      } else {
+        const d0 = document.getElementById("cardDot0");
+        const d1 = document.getElementById("cardDot1");
+        if (d0 && d1) {
+          d0.classList.add("shake");
+          d1.classList.add("shake");
+        }
+        setTimeout(() => {
+          input.value = "";
+          updateCardDots("");
+        }, 450);
+      }
     }
   }
 
-  function deletePin() {
-    if (currentPinInput.length > 0) {
-      currentPinInput = currentPinInput.slice(0, -1);
-      updateDots();
-    }
-  }
+  function updateCardDots(val) {
+    const d0 = document.getElementById("cardDot0");
+    const d1 = document.getElementById("cardDot1");
+    if (!d0 || !d1) return;
 
-  function closePinSection() {
-    pendingDonnaMember = null;
-    currentPinInput = "";
-    document.getElementById("pinSection").style.display = "none";
-    renderMembers();
-  }
-
-  function updateDots() {
-    const d0 = document.getElementById("pinDot0");
-    const d1 = document.getElementById("pinDot1");
-    d0.classList.toggle("filled", currentPinInput.length >= 1);
-    d1.classList.toggle("filled", currentPinInput.length >= 2);
+    d0.classList.toggle("filled", val.length >= 1);
+    d1.classList.toggle("filled", val.length >= 2);
     d0.classList.remove("shake");
     d1.classList.remove("shake");
-  }
-
-  function verifyPin() {
-    const d0 = document.getElementById("pinDot0");
-    const d1 = document.getElementById("pinDot1");
-
-    if (currentPinInput === DONNA_PIN) {
-      const memberToEnter = pendingDonnaMember;
-      closePinSection();
-      enterApp(memberToEnter);
-    } else {
-      d0.classList.add("shake");
-      d1.classList.add("shake");
-      setTimeout(() => {
-        currentPinInput = "";
-        updateDots();
-      }, 450);
-    }
   }
 
   function enterApp(member) {
@@ -709,9 +676,9 @@
 
   function goToSelectPage() {
     currentUser = null;
+    targetDonnaMember = null;
     document.getElementById("page-grocery").style.display = "none";
     document.getElementById("page-select").style.display = "block";
-    closePinSection();
     renderMembers();
   }
 
