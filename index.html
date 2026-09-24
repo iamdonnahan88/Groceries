@@ -37,20 +37,20 @@
       background-color: var(--bg-cream);
       min-height: 100vh;
       color: var(--text-dark);
-      padding: 16px 14px;
+      padding: 0 14px 20px;
       display: flex;
       justify-content: center;
     }
     .container { width: 100%; max-width: 680px; }
 
-    /* 페이지 1: 사용자 선택 (상하 여백 및 마진 최적화) */
+    /* 페이지 1: 사용자 선택 (상단 끝까지 꽉 차도록 여백 제거) */
     #page-select {
       background: #fdfbf7;
       border: 1px solid var(--border-soft);
-      border-radius: 26px;
+      border-radius: 28px;
       padding: 24px 20px 20px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-      margin-top: 4px;
+      margin-top: 0;
     }
     .select-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
     .basket-box { width: 44px; height: 44px; background: #eaf0e8; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
@@ -166,7 +166,7 @@
     .slogan { text-align: center; font-size: 12.5px; font-style: italic; color: #9c9186; }
 
     /* 페이지 2: 장보기 메인 */
-    #page-grocery { display: none; }
+    #page-grocery { display: none; padding-top: 16px; }
     .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .brand-group { display: flex; align-items: center; gap: 12px; }
     .brand-group h2 { font-size: 18px; font-weight: 800; color: #1e3324; }
@@ -199,7 +199,6 @@
     .input-row-1 input { flex: 1; border: none; outline: none; font-size: 16px; color: var(--text-dark); }
     .input-row-1 input::placeholder { color: #b4bdb6; }
     
-    /* 두 번째 줄: 수량, 카테고리, Store, Add List 버튼 */
     .input-row-2 { 
       display: flex; 
       gap: 5px; 
