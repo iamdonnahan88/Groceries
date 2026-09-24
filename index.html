@@ -774,6 +774,12 @@
     };
   }
 
+  // 화면 표시 및 저장 시 괄호 안의 영문 및 잔여 텍스트를 강제로 날려주는 정제 함수
+  function cleanDisplayName(rawName) {
+    if (!rawName) return "";
+    return rawName.replace(/\s*\([^)]*\)/g, "").trim();
+  }
+
   function parseQuantity(raw) {
     if (!raw) return { val: 1, unit: "" };
     const str = String(raw).trim();
@@ -786,7 +792,6 @@
     return { val: 1, unit: str };
   }
 
-  // YYYY/MM 포맷 반환 (예: "2026/09")
   function getCurrentYearMonth() {
     const d = new Date();
     const yyyy = d.getFullYear();
@@ -813,7 +818,7 @@
   };
 
   function getItemEmoji(name, cat) {
-    const text = (name || "").toLowerCase();
+    const text = cleanDisplayName(name).toLowerCase();
 
     if (text.includes("블루베리") || text.includes("blueberry") || text.includes("berry") || text.includes("베리")) return "🫐";
     if (text.includes("귤") || text.includes("mandarin") || text.includes("clementine") || text.includes("tangerine")) return "🍊";
@@ -1096,16 +1101,17 @@
       nameInput.focus();
     }
 
-    const matchedData = matchStoreProduct(name, store);
+    const cleanedName = cleanDisplayName(name);
+    const matchedData = matchStoreProduct(cleanedName, store);
     const resolvedStore = store || "Costco";
     const resolvedCat = cat || matchedData.suggestedCat;
     const resolvedPrice = Number(price !== null && price !== undefined ? price : matchedData.price);
 
-    const normalizedInput = name.trim().toLowerCase();
+    const normalizedInput = cleanedName.toLowerCase();
     const existing = items.find(it => 
       !it.completed && 
       it.store === resolvedStore && 
-      it.name.trim().toLowerCase() === normalizedInput
+      cleanDisplayName(it.name).toLowerCase() === normalizedInput
     );
 
     if (existing) {
@@ -1119,6 +1125,7 @@
       const newTotalPrice = Math.round(unitPrice * sumVal * 100) / 100;
 
       itemsRef.child(existing.key).update({
+        name: cleanedName,
         qty: newQtyDisplay,
         price: newTotalPrice,
         addedBy: currentUser ? currentUser.name : existing.addedBy
@@ -1130,7 +1137,7 @@
     const initialPrice = Math.round(resolvedPrice * (pNew.val || 1) * 100) / 100;
 
     itemsRef.push({
-      name: name,
+      name: cleanedName,
       qty: qty,
       cat: resolvedCat,
       store: resolvedStore,
@@ -1214,7 +1221,7 @@
       const existingHistory = historyData[safeKey] || { items: [], total: 0 };
       const combinedItems = (existingHistory.items || []).concat(
         completedItems.map(it => ({
-          name: it.name,
+          name: cleanDisplayName(it.name),
           qty: it.qty || "1",
           price: it.price || 0,
           store: it.store || ""
@@ -1262,7 +1269,7 @@
         const tagsHtml = (h.items || []).map(it => {
           const qtyStr = it.qty ? ` (${it.qty})` : "";
           const priceStr = it.price ? ` · $${Number(it.price).toFixed(2)}` : "";
-          return `<span class="history-item-tag">${it.name}${qtyStr}${priceStr}</span>`;
+          return `<span class="history-item-tag">${cleanDisplayName(it.name)}${qtyStr}${priceStr}</span>`;
         }).join("");
 
         card.innerHTML = `
@@ -1286,11 +1293,12 @@
     document.getElementById("historyModalOverlay").style.display = "none";
   }
 
-  // 자주 사는 품목: 실제 완료한 항목 빈도수 기반
+  // 자주 사는 품목: 실제 완료한 항목 빈도수 기반 (영문 괄호 제거 후 렌더)
   function renderQuickAdd() {
     const counts = {};
     items.filter(it => it.completed).forEach(it => {
-      counts[it.name] = (counts[it.name] || 0) + 1;
+      const pureName = cleanDisplayName(it.name);
+      counts[pureName] = (counts[pureName] || 0) + 1;
     });
 
     const sortedNames = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 7);
@@ -1303,7 +1311,7 @@
     }
 
     sortedNames.forEach(name => {
-      const match = items.find(it => it.name === name);
+      const match = items.find(it => cleanDisplayName(it.name) === name);
       const cat = match ? match.cat : "기타";
       const store = match ? match.store : "Costco";
       const price = match ? (match.price || 0) : 0;
@@ -1345,6 +1353,7 @@
   function createItemRow(item) {
     const author = getMemberInfo(item.addedBy);
     const icon = getItemEmoji(item.name, item.cat);
+    const displayName = cleanDisplayName(item.name);
     const storeTag = (item.store && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
     const priceDisplay = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
     const qtyText = item.qty ? item.qty : "1";
@@ -1356,7 +1365,7 @@
         <div class="checkbox-box" onclick="toggleComplete('${item.key}', ${item.completed})"></div>
         <span class="item-icon">${icon}</span>
         <div class="item-text-wrap">
-          <span class="item-name-text">${item.name}</span>
+          <span class="item-name-text">${displayName}</span>
           <div class="item-sub-tags">
             <span class="item-cat-text">${item.cat}</span>
             ${storeTag}
@@ -1462,6 +1471,7 @@
       completedItems.forEach(item => {
         const buyer = getMemberInfo(item.completedBy || item.addedBy);
         const icon = getItemEmoji(item.name, item.cat);
+        const displayName = cleanDisplayName(item.name);
         const storeTag = (item.store && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
         const priceVal = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
         const qtyDisplay = item.qty ? ` (${item.qty})` : "";
@@ -1473,7 +1483,7 @@
             <button class="btn-restore" onclick="toggleComplete('${item.key}', ${item.completed})" title="다시 목록으로 복구">↩</button>
             <span class="item-icon" style="opacity: 0.7;">${icon}</span>
             <div class="item-text-wrap">
-              <span class="item-name-text">${item.name}${qtyDisplay}</span>
+              <span class="item-name-text">${displayName}${qtyDisplay}</span>
               <div class="item-sub-tags">
                 ${storeTag}
                 <span class="price-pill" style="opacity: 0.7;">${priceVal}</span>
