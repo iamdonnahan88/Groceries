@@ -129,7 +129,7 @@
     .quick-card .name { font-size: 14px; font-weight: 700; display: block; margin-bottom: 2px; }
     .quick-card .action { font-size: 11px; color: #a4a4a4; }
 
-    /* 마트별 필터 탭 (새로 추가) */
+    /* 마트별 필터 탭 */
     .store-filter-bar {
       display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 14px;
       margin-bottom: 16px; scrollbar-width: none;
@@ -165,29 +165,40 @@
     .items-ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
     .item-row {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 14px; border: 1px solid #f1eeea; border-radius: 12px; background: #fff;
+      padding: 12px 12px; border: 1px solid #f1eeea; border-radius: 12px; background: #fff;
+      gap: 10px;
     }
-    .item-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+    .item-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
     .checkbox-box {
       width: 22px; height: 22px; border-radius: 6px; border: 2px solid #cbd5cf;
       display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
     }
     .item-icon { font-size: 22px; flex-shrink: 0; }
-    .item-text-wrap { display: flex; flex-direction: column; min-width: 0; }
-    .item-name-text { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .item-sub-tags { display: flex; gap: 6px; align-items: center; margin-top: 3px; font-size: 12px; }
+    .item-text-wrap { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+    
+    .item-name-text { 
+      font-size: 15px; 
+      font-weight: 700; 
+      white-space: normal; 
+      word-break: break-word; 
+      line-height: 1.35; 
+      color: var(--text-dark);
+    }
+    .item-sub-tags { display: flex; gap: 6px; align-items: center; margin-top: 4px; font-size: 12px; flex-wrap: wrap; }
     .item-cat-text { color: var(--text-muted); }
     .store-badge {
       background: #f4ede4; color: #735438; padding: 1px 6px; border-radius: 6px; font-weight: 600; font-size: 11px;
     }
 
-    .item-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .item-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    
     .author-badge {
-      display: flex; align-items: center; gap: 6px; padding: 4px 10px;
-      border-radius: 14px; font-size: 12px; font-weight: 700;
+      display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px;
+      border-radius: 12px; font-size: 11px; font-weight: 700; line-height: 1;
+      white-space: nowrap;
     }
-    .author-badge .sub-act { font-size: 11px; font-weight: 400; opacity: 0.8; }
-    .btn-del { background: none; border: none; font-size: 18px; color: #c4c4c4; cursor: pointer; padding: 0 4px; }
+    .author-badge .sub-act { font-size: 10px; font-weight: 400; opacity: 0.85; }
+    .btn-del { background: none; border: none; font-size: 18px; color: #c4c4c4; cursor: pointer; padding: 2px 4px; line-height: 1; }
     .btn-del:hover { color: #e53e3e; }
 
     /* 완료 항목 */
@@ -199,7 +210,7 @@
       font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .btn-restore:hover { background: #e0ded8; }
-    .restore-tip { font-size: 11px; color: #a4a4a4; margin-left: 6px; }
+    .restore-tip { font-size: 11px; color: #a4a4a4; margin-left: 4px; }
 
     .empty-note { text-align: center; color: var(--text-muted); font-size: 14px; padding: 24px 0; }
   </style>
@@ -222,7 +233,7 @@
     </div>
 
     <div class="member-input-wrap">
-      <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: 엄마, 아빠)" onkeypress="if(event.key==='Enter') addMember()">
+      <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: Donna, 아들, 딸)" onkeypress="if(event.key==='Enter') addMember()">
       <button type="button" class="btn-member-add" onclick="addMember()">추가</button>
     </div>
 
@@ -266,7 +277,7 @@
     <div class="add-box">
       <div class="input-row-1">
         <span class="plus">＋</span>
-        <input type="text" id="itemNameInput" placeholder="우유, 바나나, 휴지..." onkeypress="if(event.key==='Enter') addItem()">
+        <input type="text" id="itemNameInput" placeholder="어린이 타이레놀, 우유, 바나나..." onkeypress="if(event.key==='Enter') addItem()">
       </div>
       <div class="input-row-2">
         <input type="text" id="itemQtyInput" class="input-qty" placeholder="수량 (선택)" onkeypress="if(event.key==='Enter') addItem()">
@@ -306,7 +317,7 @@
       <div id="quickGridContainer" class="quick-grid"></div>
     </div>
 
-    <!-- 구매처별 필터 탭 (Costco, Trader Joe's, H-Mart, HEB, Kroger 등) -->
+    <!-- 구매처별 필터 탭 -->
     <div id="storeFilterBar" class="store-filter-bar"></div>
 
     <!-- 구매할 품목 목록 -->
@@ -331,6 +342,11 @@
 </div>
 
 <script>
+  // ==========================================
+  // Donna 전용 2자리 비밀번호 설정 (필요시 수정 가능)
+  // ==========================================
+  const DONNA_PIN = "88";
+
   const firebaseConfig = {
     apiKey: "AIzaSyCwDdHF5Fw5d2gMal5H1K3OC9isByJJbOM",
     authDomain: "groceries-39b60.firebaseapp.com",
@@ -360,6 +376,10 @@
 
   function getItemEmoji(name, cat) {
     const text = name.toLowerCase();
+
+    if (text.includes("타이레놀") || text.includes("tylenol") || text.includes("애드빌") || text.includes("advil") || text.includes("약") || text.includes("비타민") || text.includes("유산균") || text.includes("영양제")) return "💊";
+    if (text.includes("밴드") || text.includes("반창고") || text.includes("연고")) return "🩹";
+
     if (text.includes("사과") || text.includes("apple")) return "🍎";
     if (text.includes("바나나") || text.includes("banana")) return "🍌";
     if (text.includes("딸기") || text.includes("strawberry")) return "🍓";
@@ -373,6 +393,7 @@
     if (text.includes("키위") || text.includes("kiwi")) return "🥝";
     if (text.includes("파인애플") || text.includes("pineapple")) return "🍍";
     if (text.includes("망고") || text.includes("mango")) return "🥭";
+
     if (text.includes("토마토") || text.includes("tomato")) return "🍅";
     if (text.includes("오이") || text.includes("cucumber")) return "🥒";
     if (text.includes("아보카도") || text.includes("avocado")) return "🥑";
@@ -386,6 +407,7 @@
     if (text.includes("브로콜리") || text.includes("broccoli")) return "🥦";
     if (text.includes("고추") || text.includes("pepper")) return "🌶️";
     if (text.includes("파") || text.includes("상추") || text.includes("샐러드") || text.includes("배추") || text.includes("시금치")) return "🥬";
+
     if (text.includes("소고기") || text.includes("비프") || text.includes("스테이크") || text.includes("beef") || text.includes("steak") || text.includes("고기")) return "🥩";
     if (text.includes("돼지") || text.includes("삼겹살") || text.includes("베이컨") || text.includes("목살") || text.includes("pork")) return "🥓";
     if (text.includes("닭") || text.includes("치킨") || text.includes("닭가슴살") || text.includes("chicken")) return "🍗";
@@ -395,6 +417,7 @@
     if (text.includes("게") || text.includes("크랩") || text.includes("crab")) return "🦀";
     if (text.includes("오징어") || text.includes("문어")) return "🐙";
     if (text.includes("조개") || text.includes("굴")) return "🦪";
+
     if (text.includes("우유") || text.includes("milk")) return "🥛";
     if (text.includes("치즈") || text.includes("cheese")) return "🧀";
     if (text.includes("달걀") || text.includes("계란") || text.includes("egg")) return "🥚";
@@ -405,9 +428,11 @@
     if (text.includes("물") || text.includes("생수") || text.includes("water")) return "💧";
     if (text.includes("주스") || text.includes("음료") || text.includes("juice")) return "🧃";
     if (text.includes("커피") || text.includes("coffee")) return "☕";
+
     if (text.includes("휴지") || text.includes("화장지") || text.includes("키친타올") || text.includes("물티슈") || text.includes("봉투")) return "🧻";
     if (text.includes("샴푸") || text.includes("린스") || text.includes("바디워시") || text.includes("세제") || text.includes("비누")) return "🧴";
     if (text.includes("치약") || text.includes("칫솔")) return "🪥";
+    
     return categoryIcons[cat] || "🛒";
   }
 
@@ -421,7 +446,7 @@
 
   let members = [];
   let items = [];
-  let currentUser = JSON.parse(localStorage.getItem("grocery_app_current_user")) || null;
+  let currentUser = null;
 
   membersRef.on("value", snapshot => {
     const data = snapshot.val();
@@ -455,13 +480,16 @@
       card.className = "user-card";
       card.onclick = () => selectMember(member);
 
+      const isDonna = member.name.trim().toLowerCase() === "donna";
+      const subLabel = isDonna ? "🔒 PIN 2자리" : "목록 열기";
+
       card.innerHTML = `
         <button class="btn-member-del" title="삭제" onclick="deleteMember(event, '${member.key}')">×</button>
         <div class="user-avatar" style="background-color: ${member.bg};">
           <span>${member.emoji}</span>
         </div>
         <div class="user-card-name">${member.name}</div>
-        <div class="user-card-sub">목록 열기</div>
+        <div class="user-card-sub">${subLabel}</div>
       `;
       container.appendChild(card);
     });
@@ -490,14 +518,25 @@
       membersRef.child(key).remove();
       if (currentUser && currentUser.key === key) {
         currentUser = null;
-        localStorage.removeItem("grocery_app_current_user");
       }
     }
   }
 
+  // Donna 선택 시 2자리 숫자 PIN 확인
   function selectMember(member) {
+    const isDonna = member.name.trim().toLowerCase() === "donna";
+
+    if (isDonna) {
+      const inputPin = prompt("Donna 전용 2자리 비밀번호를 입력하세요:");
+      if (inputPin === null) return; // 취소한 경우
+
+      if (inputPin !== DONNA_PIN) {
+        alert("비밀번호가 올바르지 않습니다.");
+        return;
+      }
+    }
+
     currentUser = member;
-    localStorage.setItem("grocery_app_current_user", JSON.stringify(currentUser));
     document.getElementById("page-select").style.display = "none";
     document.getElementById("page-grocery").style.display = "block";
     updateNavUser();
@@ -505,8 +544,10 @@
   }
 
   function goToSelectPage() {
+    currentUser = null;
     document.getElementById("page-grocery").style.display = "none";
     document.getElementById("page-select").style.display = "block";
+    renderMembers();
   }
 
   function updateNavUser() {
@@ -612,7 +653,6 @@
     });
   }
 
-  // 상단 마트별 필터 탭 생성
   function renderStoreFilters(pendingItems) {
     const bar = document.getElementById("storeFilterBar");
     bar.innerHTML = "";
@@ -622,7 +662,6 @@
         ? pendingItems.length 
         : pendingItems.filter(it => it.store === st).length;
 
-      // 품목이 없더라도 기본 주요 마트는 항상 탭에 표시
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = `filter-tab ${selectedStoreFilter === st ? "active" : ""}`;
@@ -678,7 +717,6 @@
 
     renderStoreFilters(pendingItems);
 
-    // 구매처 필터 적용
     let displayPending = pendingItems;
     if (selectedStoreFilter !== "전체") {
       displayPending = pendingItems.filter(it => it.store === selectedStoreFilter);
@@ -688,7 +726,6 @@
       pendingListContainer.innerHTML = `<div class="empty-note">${selectedStoreFilter === "전체" ? "구매할 품목이 비어있습니다." : selectedStoreFilter + "에 구매할 품목이 없습니다."}</div>`;
     } else {
       if (selectedStoreFilter === "전체") {
-        // "전체" 탭일 때는 마트별로 구획을 나누어 보기 좋게 표시
         const groups = {};
         displayPending.forEach(it => {
           const storeName = it.store || "상관없음";
@@ -696,7 +733,6 @@
           groups[storeName].push(it);
         });
 
-        // 정렬: 주요 마트 순서대로 정렬
         const storeOrder = ["Costco", "Trader Joe's", "H-Mart", "HEB", "Kroger", "기타", "상관없음"];
         const sortedStores = Object.keys(groups).sort((a, b) => {
           let idxA = storeOrder.indexOf(a);
@@ -724,7 +760,6 @@
           pendingListContainer.appendChild(groupWrap);
         });
       } else {
-        // 특정 마트 탭을 골랐을 때
         const ul = document.createElement("ul");
         ul.className = "items-ul";
         displayPending.forEach(item => {
@@ -734,7 +769,6 @@
       }
     }
 
-    // 완료 품목
     if (completedItems.length === 0) {
       completedListUl.innerHTML = `<li class="empty-note">완료된 품목이 없습니다.</li>`;
     } else {
@@ -778,12 +812,6 @@
     document.getElementById("progressBarFill").style.width = percent + "%";
 
     renderQuickAdd();
-  }
-
-  if (currentUser) {
-    document.getElementById("page-select").style.display = "none";
-    document.getElementById("page-grocery").style.display = "block";
-    updateNavUser();
   }
 </script>
 
