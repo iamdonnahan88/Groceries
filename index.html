@@ -79,7 +79,6 @@
     }
     .user-tag-avatar { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
 
-    /* 상단 프로그레스 및 타이틀 */
     .hero-grocery { margin-bottom: 22px; }
     .hero-grocery .tag { font-size: 13px; color: var(--primary-green); font-weight: 700; }
     .hero-grocery h1 { font-size: 30px; font-weight: 800; margin: 6px 0 10px; }
@@ -90,7 +89,6 @@
     .bar-inner { height: 100%; background: var(--primary-green); width: 0%; transition: width 0.3s ease; }
     .bar-label { font-size: 12px; color: var(--text-muted); }
 
-    /* 품목 추가 카드 */
     .add-box {
       background: #ffffff; border-radius: 18px; padding: 20px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.03); border: 1px solid var(--border-light);
@@ -107,7 +105,6 @@
     .btn-submit { background: var(--primary-green); color: white; border: none; padding: 11px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
     .btn-submit:hover { background: var(--primary-green-hover); }
 
-    /* 자주 사는 품목 */
     .quick-section { margin-bottom: 30px; }
     .quick-title-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
     .quick-title-bar h3 { font-size: 16px; font-weight: 700; }
@@ -125,7 +122,6 @@
     .quick-card .name { font-size: 14px; font-weight: 700; display: block; margin-bottom: 2px; }
     .quick-card .action { font-size: 11px; color: #a4a4a4; }
 
-    /* 목록 영역 */
     .list-box {
       background: #ffffff; border-radius: 20px; border: 1px solid var(--border-light);
       padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
@@ -164,7 +160,6 @@
     .btn-del { background: none; border: none; font-size: 18px; color: #c4c4c4; cursor: pointer; padding: 0 4px; }
     .btn-del:hover { color: #e53e3e; }
 
-    /* 완료 항목 스타일 */
     .completed-box { background: #fbfbfa; }
     .completed-item { opacity: 0.65; background: #fdfdfc; }
     .completed-item .item-name-text { text-decoration: line-through; }
@@ -183,7 +178,7 @@
 
 <div class="container">
 
-  <!-- ==================== 페이지 1: 가족 구성원 선택 화면 ==================== -->
+  <!-- 페이지 1: 가족 구성원 선택 화면 -->
   <div id="page-select">
     <div class="select-header">
       <div class="basket-box">🧺</div>
@@ -196,22 +191,18 @@
       <p>가족 이름을 추가하고, 카드를 선택하면 장보기 목록이 열려요.</p>
     </div>
 
-    <!-- 가족 구성원 추가 입력창 -->
     <div class="member-input-wrap">
       <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: 엄마, 아빠)" onkeypress="if(event.key==='Enter') addMember()">
       <button type="button" class="btn-member-add" onclick="addMember()">추가</button>
     </div>
 
-    <!-- 구성원 카드 목록 -->
     <div id="membersContainer" class="members-grid"></div>
 
     <p class="slogan">오늘도 같이, 필요한 만큼만.</p>
   </div>
 
-
-  <!-- ==================== 페이지 2: 장보기 메인 화면 ==================== -->
+  <!-- 페이지 2: 장보기 메인 화면 -->
   <div id="page-grocery">
-    <!-- 상단 네비 -->
     <div class="top-nav">
       <div class="brand-group">
         <div class="basket-box">🧺</div>
@@ -227,7 +218,6 @@
       </div>
     </div>
 
-    <!-- 타이틀 & 진행률 -->
     <div class="hero-grocery">
       <span class="tag">오늘의 장보기</span>
       <h1>무엇이 필요한가요?</h1>
@@ -251,7 +241,6 @@
       <div class="input-row-2">
         <input type="text" id="itemQtyInput" class="input-qty" placeholder="수량 (선택)" onkeypress="if(event.key==='Enter') addItem()">
         
-        <!-- 카테고리 선택 -->
         <select id="itemCatSelect" class="select-box">
           <option value="채소·과일">채소·과일</option>
           <option value="유제품·달걀">유제품·달걀</option>
@@ -261,9 +250,9 @@
           <option value="기타">기타</option>
         </select>
 
-        <!-- 구매처 선택 (새로 추가됨) -->
+        <!-- 구매처 (선택 삭제 완료) -->
         <select id="itemStoreSelect" class="select-box">
-          <option value="상관없음">구매처 (선택)</option>
+          <option value="상관없음">구매처</option>
           <option value="Costco">Costco</option>
           <option value="Trader Joe's">Trader Joe's</option>
           <option value="H-Mart">H-Mart</option>
@@ -288,7 +277,7 @@
       <div id="quickGridContainer" class="quick-grid"></div>
     </div>
 
-    <!-- 구매할 품목 목록 -->
+    <!-- 구매할 품목 -->
     <div class="list-box">
       <div class="list-header">
         <h3>구매할 품목 <span id="pendingBadge" class="badge-count">0</span></h3>
@@ -299,7 +288,7 @@
 
     <p class="footer-notice">▪ 입력하신 데이터는 브라우저에 안전하게 자동 저장됩니다</p>
 
-    <!-- 완료한 품목 목록 -->
+    <!-- 완료한 품목 -->
     <div class="list-box completed-box">
       <div class="list-header">
         <h3>완료한 품목 (<span id="completedBadge">0</span>)</h3>
@@ -316,6 +305,7 @@
   const STORAGE_ITEMS = "grocery_app_items";
   const STORAGE_CURRENT_USER = "grocery_app_user";
 
+  // 기본 카테고리별 이모지
   const categoryIcons = {
     "채소·과일": "🥬",
     "유제품·달걀": "🥛",
@@ -325,19 +315,76 @@
     "기타": "🛒"
   };
 
+  // 품목명 기반 맞춤형 이모지 자동 매칭
   function getItemEmoji(name, cat) {
-    if (name.includes("바나나")) return "🍌";
-    if (name.includes("토마토")) return "🍅";
-    if (name.includes("오이")) return "🥒";
-    if (name.includes("아보카도")) return "🥑";
-    if (name.includes("딸기")) return "🍓";
-    if (name.includes("사과")) return "🍎";
-    if (name.includes("치즈")) return "🧀";
-    if (name.includes("샴푸") || name.includes("비누")) return "🧴";
-    if (name.includes("우유")) return "🥛";
-    if (name.includes("계란") || name.includes("달걀")) return "🥚";
-    if (name.includes("빵")) return "🥖";
-    if (name.includes("휴지") || name.includes("봉투")) return "🧻";
+    const text = name.toLowerCase();
+
+    // 과일류
+    if (text.includes("사과") || text.includes("apple")) return "🍎";
+    if (text.includes("바나나") || text.includes("banana")) return "🍌";
+    if (text.includes("딸기") || text.includes("strawberry")) return "🍓";
+    if (text.includes("포도") || text.includes("grape")) return "🍇";
+    if (text.includes("수박") || text.includes("watermelon")) return "🍉";
+    if (text.includes("오렌지") || text.includes("귤") || text.includes("orange")) return "🍊";
+    if (text.includes("레몬") || text.includes("lemon")) return "🍋";
+    if (text.includes("복숭아") || text.includes("peach")) return "🍑";
+    if (text.includes("체리") || text.includes("cherry")) return "🍒";
+    if (text.includes("블루베리") || text.includes("berry")) return "🫐";
+    if (text.includes("키위") || text.includes("kiwi")) return "🥝";
+    if (text.includes("파인애플") || text.includes("pineapple")) return "🍍";
+    if (text.includes("망고") || text.includes("mango")) return "🥭";
+    if (text.includes("배")) return "🍐";
+
+    // 채소/야채류
+    if (text.includes("토마토") || text.includes("tomato")) return "🍅";
+    if (text.includes("오이") || text.includes("cucumber")) return "🥒";
+    if (text.includes("아보카도") || text.includes("avocado")) return "🥑";
+    if (text.includes("당근") || text.includes("carrot")) return "🥕";
+    if (text.includes("양파") || text.includes("onion")) return "🧅";
+    if (text.includes("마늘") || text.includes("garlic")) return "🧄";
+    if (text.includes("버섯") || text.includes("mushroom")) return "🍄";
+    if (text.includes("감자") || text.includes("potato")) return "🥔";
+    if (text.includes("고구마")) return "🍠";
+    if (text.includes("옥수수") || text.includes("corn")) return "🌽";
+    if (text.includes("브로콜리") || text.includes("broccoli")) return "🥦";
+    if (text.includes("고추") || text.includes("pepper")) return "🌶️";
+    if (text.includes("파") || text.includes("상추") || text.includes("샐러드") || text.includes("루꼴라") || text.includes("배추") || text.includes("시금치")) return "🥬";
+
+    // 육류
+    if (text.includes("소고기") || text.includes("비프") || text.includes("스테이크") || text.includes("beef") || text.includes("steak") || text.includes("고기")) return "🥩";
+    if (text.includes("돼지") || text.includes("삼겹살") || text.includes("베이컨") || text.includes("목살") || text.includes("pork") || text.includes("bacon")) return "🥓";
+    if (text.includes("닭") || text.includes("치킨") || text.includes("닭가슴살") || text.includes("chicken")) return "🍗";
+    if (text.includes("소시지") || text.includes("소세지") || text.includes("sausage") || text.includes("스팸")) return "🌭";
+
+    // 수산물/해산물
+    if (text.includes("생선") || text.includes("연어") || text.includes("고등어") || text.includes("참치") || text.includes("갈치") || text.includes("fish") || text.includes("salmon")) return "🐟";
+    if (text.includes("새우") || text.includes("shrimp")) return "🍤";
+    if (text.includes("게") || text.includes("크랩") || text.includes("crab")) return "🦀";
+    if (text.includes("오징어") || text.includes("문어") || text.includes("낙지")) return "🐙";
+    if (text.includes("조개") || text.includes("굴") || text.includes("홍합")) return "🦪";
+
+    // 유제품/달걀/베이커리
+    if (text.includes("우유") || text.includes("milk")) return "🥛";
+    if (text.includes("치즈") || text.includes("cheese")) return "🧀";
+    if (text.includes("달걀") || text.includes("계란") || text.includes("egg")) return "🥚";
+    if (text.includes("버터") || text.includes("butter")) return "🧈";
+    if (text.includes("요거트") || text.includes("요플레") || text.includes("yogurt")) return "🥣";
+    if (text.includes("식빵") || text.includes("베이글") || text.includes("크루아상") || text.includes("bread") || text.includes("빵")) return "🍞";
+
+    // 식료품/가공식품
+    if (text.includes("라면") || text.includes("국수") || text.includes("면") || text.includes("파스타") || text.includes("noodle")) return "🍜";
+    if (text.includes("밥") || text.includes("햇반") || text.includes("쌀") || text.includes("rice")) return "🍚";
+    if (text.includes("과자") || text.includes("스낵") || text.includes("칩") || text.includes("cookie")) return "🍪";
+    if (text.includes("물") || text.includes("생수") || text.includes("water")) return "💧";
+    if (text.includes("주스") || text.includes("음료") || text.includes("juice")) return "🧃";
+    if (text.includes("커피") || text.includes("coffee")) return "☕";
+
+    // 생활용품
+    if (text.includes("휴지") || text.includes("화장지") || text.includes("키친타올") || text.includes("물티슈") || text.includes("티슈") || text.includes("봉투") || text.includes("쓰레기")) return "🧻";
+    if (text.includes("샴푸") || text.includes("린스") || text.includes("바디워시") || text.includes("세제") || text.includes("퐁퐁") || text.includes("로션") || text.includes("비누")) return "🧴";
+    if (text.includes("치약") || text.includes("칫솔")) return "🪥";
+
+    // 카테고리 기본 이모지
     return categoryIcons[cat] || "🛒";
   }
 
@@ -349,7 +396,6 @@
     { bg: "#f07897", emoji: "👱" }
   ];
 
-  // LocalStorage에서 데이터 불러오기
   let members = JSON.parse(localStorage.getItem(STORAGE_MEMBERS)) || [];
   let items = JSON.parse(localStorage.getItem(STORAGE_ITEMS)) || [];
   let currentUser = JSON.parse(localStorage.getItem(STORAGE_CURRENT_USER)) || null;
@@ -360,7 +406,6 @@
     localStorage.setItem(STORAGE_CURRENT_USER, JSON.stringify(currentUser));
   }
 
-  // 구성원 관리
   function renderMembers() {
     const container = document.getElementById("membersContainer");
     container.innerHTML = "";
@@ -445,7 +490,6 @@
     return members.find(m => m.name === name) || { name: name, emoji: "👤", bg: "#7d8b82" };
   }
 
-  // 장보기 목록 관리
   function addItem(customName = null, customCat = "기타", customStore = "상관없음") {
     let name = customName;
     let qty = "";
@@ -532,7 +576,7 @@
 
     sortedNames.forEach(name => {
       const match = items.find(it => it.name === name);
-      const cat = match ? match.cat : "채소·과일";
+      const cat = match ? match.cat : "기타";
       const store = match ? match.store : "상관없음";
       const emoji = getItemEmoji(name, cat);
 
@@ -598,6 +642,7 @@
     } else {
       completedItems.forEach(item => {
         const buyer = getMemberInfo(item.completedBy || item.addedBy);
+        const icon = getItemEmoji(item.name, item.cat);
         const storeTag = (item.store && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
 
         const li = document.createElement("li");
@@ -605,6 +650,7 @@
         li.innerHTML = `
           <div class="item-left">
             <button class="btn-restore" onclick="toggleComplete(${item.id})" title="다시 목록으로 복구">↩</button>
+            <span class="item-icon" style="opacity: 0.7;">${icon}</span>
             <div class="item-text-wrap">
               <span class="item-name-text">${item.name}</span>
               <div class="item-sub-tags">${storeTag}</div>
@@ -636,7 +682,7 @@
     renderQuickAdd();
   }
 
-  // 이전 접속 사용자가 있으면 바로 메인화면으로 복원
+  // 이전 접속 기록 복원
   if (currentUser && members.some(m => m.id === currentUser.id)) {
     document.getElementById("page-select").style.display = "none";
     document.getElementById("page-grocery").style.display = "block";
