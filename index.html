@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>오늘 뭐 사지👀</title>
   
+  <!-- 트렌디하고 가독성 높은 프리텐다드(Pretendard) 웹폰트 로드 -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
   <!-- Firebase SDK 라이브러리 로드 -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -22,7 +25,14 @@
       --border-soft: #ebdccb;
       --border-light: #ece9e2;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; 
+      -webkit-tap-highlight-color: transparent; 
+      letter-spacing: -0.02em;
+    }
     body {
       background-color: var(--bg-cream);
       min-height: 100vh;
@@ -44,9 +54,20 @@
     }
     .select-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
     .basket-box { width: 48px; height: 48px; background: #eaf0e8; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-    .sub-brand { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: #a48771; }
+    .sub-brand { font-size: 13px; font-weight: 700; letter-spacing: 1.5px; color: #a48771; font-family: "Corbel", sans-serif; }
     .select-title-box { text-align: center; margin-bottom: 26px; }
-    .badge-sub { font-size: 14px; font-weight: 700; color: var(--primary-green); display: block; margin-bottom: 8px; }
+    
+    /* WELCOME 뱃지: 요청하신 Corbel 폰트 적용 */
+    .badge-sub { 
+      font-size: 14px; 
+      font-weight: 700; 
+      color: var(--primary-green); 
+      display: block; 
+      margin-bottom: 8px; 
+      font-family: "Corbel", -apple-system, sans-serif; 
+      letter-spacing: 2px; 
+    }
+    
     .select-title-box h1 { font-size: 30px; line-height: 1.35; margin-bottom: 10px; font-weight: 800; }
     .select-title-box p { color: var(--text-muted); font-size: 14.5px; }
 
@@ -70,7 +91,6 @@
     .user-card-name { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
     .user-card-sub { font-size: 13px; color: #a0a0a0; display: flex; align-items: center; justify-content: center; gap: 6px; }
     
-    /* 자물쇠 옆 파스텔 동그라미 2개 */
     .pin-inline-wrap {
       display: inline-flex;
       align-items: center;
@@ -101,7 +121,6 @@
       40%, 80% { transform: translateX(4px); }
     }
 
-    /* 키보드 호출용 숨김 입력창 */
     #hiddenPinInput {
       position: absolute;
       top: -9999px;
@@ -172,7 +191,7 @@
     .quick-card .name { font-size: 14px; font-weight: 700; display: block; margin-bottom: 2px; }
     .quick-card .action { font-size: 11px; color: #a4a4a4; }
 
-    /* 마트별 필터 탭 */
+    /* Store별 필터 탭 */
     .store-filter-bar {
       display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 14px;
       margin-bottom: 16px; scrollbar-width: none;
@@ -272,7 +291,7 @@
     <div class="select-title-box">
       <span class="badge-sub">WELCOME</span>
       <h1>오늘은 누가<br>장을 보러 가나요?</h1>
-      <p>가족 이름을 추가하세요.☺️ </p>
+      <p>가족 이름을 추가하세요🤍</p>
     </div>
 
     <div class="member-input-wrap">
@@ -500,10 +519,10 @@
     // 8. 정육 / 수산
     if (text.includes("소고기") || text.includes("비프") || text.includes("스테이크") || text.includes("beef") || text.includes("steak") || text.includes("갈비") || text.includes("불고기") || text.includes("고기")) return "🥩";
     if (text.includes("돼지") || text.includes("삼겹살") || text.includes("베이컨") || text.includes("목살") || text.includes("pork") || text.includes("bacon")) return "🥓";
-    if (text.includes("닭") || text.includes("치킨") || text.includes("닭가슴살") || text.includes("chicken") || text.includes("윙")) return "🍗";
+    if (text.includes("닭") || text.includes("치킨") || text.includes("닭가슴살") || text.includes("chicken")) return "🍗";
     if (text.includes("생선") || text.includes("연어") || text.includes("고등어") || text.includes("참치") || text.includes("갈치") || text.includes("fish") || text.includes("salmon")) return "🐟";
     if (text.includes("새우") || text.includes("shrimp")) return "🍤";
-    if (text.includes("게") || text.includes("크랩") || text.includes("crab") || text.includes("꽃게")) return "🦀";
+    if (text.includes("게") || text.includes("크랩") || text.includes("crab")) return "🦀";
     if (text.includes("오징어") || text.includes("문어") || text.includes("낙지")) return "🐙";
     if (text.includes("조개") || text.includes("굴") || text.includes("홍합")) return "🦪";
 
