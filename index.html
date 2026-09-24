@@ -36,26 +36,35 @@
     body {
       background-color: var(--bg-cream);
       min-height: 100vh;
+      min-height: 100dvh; /* 모바일 동적 화면 높이 완벽 대응 */
       color: var(--text-dark);
-      padding: 0 14px 20px;
+      padding: 16px;
       display: flex;
       justify-content: center;
+      align-items: center; /* 화면 정가운데 배치로 위아래 공백 완벽 균등 */
     }
-    .container { width: 100%; max-width: 680px; }
+    .container { 
+      width: 100%; 
+      max-width: 680px; 
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
 
-    /* 페이지 1: 사용자 선택 (상단 끝까지 꽉 차도록 여백 제거) */
+    /* 페이지 1: 사용자 선택 */
     #page-select {
       background: #fdfbf7;
       border: 1px solid var(--border-soft);
       border-radius: 28px;
-      padding: 24px 20px 20px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
-      margin-top: 0;
+      padding: 30px 22px 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      margin: 0 auto;
+      width: 100%;
     }
-    .select-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .select-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .basket-box { width: 44px; height: 44px; background: #eaf0e8; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
     .sub-brand { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: #a48771; font-family: "Corbel", sans-serif; }
-    .select-title-box { text-align: center; margin-bottom: 18px; }
+    .select-title-box { text-align: center; margin-bottom: 22px; }
     
     /* WELCOME 뱃지: Corbel 폰트 */
     .badge-sub { 
@@ -68,8 +77,8 @@
       letter-spacing: 2px; 
     }
     
-    .select-title-box h1 { font-size: 26px; line-height: 1.3; margin-bottom: 6px; font-weight: 800; }
-    .select-title-box p { color: var(--text-muted); font-size: 13.5px; }
+    .select-title-box h1 { font-size: 27px; line-height: 1.32; margin-bottom: 6px; font-weight: 800; }
+    .select-title-box p { color: var(--text-muted); font-size: 14px; }
 
     /* 입력 래퍼: 라인 안에 쏙 들어가고 가운데 정렬 */
     .member-input-wrap { 
@@ -78,7 +87,7 @@
       background: #f3eee5; 
       padding: 5px; 
       border-radius: 12px; 
-      margin: 0 auto 16px; 
+      margin: 0 auto 20px; 
       width: 100%; 
       max-width: 420px; 
       align-items: center;
@@ -107,7 +116,7 @@
       font-size: 13.5px;
     }
 
-    .members-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px; }
+    .members-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 18px; }
     .user-card {
       background: #ffffff;
       border: 1.5px solid #ece4d8;
@@ -119,7 +128,7 @@
       transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s;
     }
     .user-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.05); }
-    .user-avatar { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 8px; }
+    .user-avatar { width: 62px; height: 62px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 8px; }
     .user-card-name { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
     .user-card-sub { font-size: 13px; color: #a0a0a0; display: flex; align-items: center; justify-content: center; gap: 6px; }
     
@@ -166,7 +175,7 @@
     .slogan { text-align: center; font-size: 12.5px; font-style: italic; color: #9c9186; }
 
     /* 페이지 2: 장보기 메인 */
-    #page-grocery { display: none; padding-top: 16px; }
+    #page-grocery { display: none; width: 100%; }
     .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .brand-group { display: flex; align-items: center; gap: 12px; }
     .brand-group h2 { font-size: 18px; font-weight: 800; color: #1e3324; }
@@ -349,7 +358,7 @@
 
 <div class="container">
 
-  <!-- 화면 1: 가족 구성원 선택 -->
+  <!-- 화면 1: 가족 구성원 선택 (상하 여백 완전 균등 중앙 정렬) -->
   <div id="page-select">
     <div class="select-header">
       <div class="basket-box">🧺</div>
@@ -777,6 +786,7 @@
     currentUser = member;
     document.getElementById("page-select").style.display = "none";
     document.getElementById("page-grocery").style.display = "block";
+    window.scrollTo(0, 0);
     updateNavUser();
     renderApp();
   }
@@ -786,6 +796,7 @@
     targetLockedMember = null;
     document.getElementById("page-grocery").style.display = "none";
     document.getElementById("page-select").style.display = "block";
+    window.scrollTo(0, 0);
     renderMembers();
   }
 
