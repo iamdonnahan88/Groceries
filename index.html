@@ -217,13 +217,13 @@
     }
     .user-tag-avatar { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
 
-    /* 총 예상 금액 요약 카드 */
+    /* 총 금액 & 이번 달 지출 요약 카드 */
     .cost-summary-card {
       background: linear-gradient(135deg, #375b42 0%, #24412e 100%);
       color: #fff;
       border-radius: 20px;
       padding: 16px 18px;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       box-shadow: 0 8px 20px rgba(55, 91, 66, 0.16);
     }
     .cost-main-row {
@@ -262,7 +262,6 @@
     .btn-summary-action:hover { background: rgba(255, 255, 255, 0.28); }
 
     .hero-grocery { margin-bottom: 18px; }
-    .hero-grocery .tag { font-size: 12px; color: var(--primary-green); font-weight: 700; letter-spacing: 1px; }
     .hero-grocery h1 { font-size: 26px; font-weight: 800; margin: 4px 0 8px; }
     .progress-bar-wrap { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
     .remaining-text { font-size: 13.5px; color: var(--text-muted); }
@@ -464,7 +463,7 @@
     .btn-restore:hover { background: #e0ded8; }
     .empty-note { text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px 0; }
 
-    /* 히스토리 모달 (History Modal) */
+    /* 히스토리 모달 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -579,7 +578,7 @@
       </div>
     </div>
 
-    <!-- 수정된 총 예상 금액 & 이번 달 지출 요약 카드 -->
+    <!-- 수정된 총 금액 & 이번 달 지출 요약 카드 -->
     <div class="cost-summary-card">
       <div class="cost-main-row">
         <div class="cost-info-left">
@@ -604,7 +603,6 @@
     </div>
 
     <div class="hero-grocery">
-      <span class="tag">실시간 공유 장보기</span>
       <h1>무엇이 필요한가요?</h1>
       <div class="progress-bar-wrap">
         <span id="remainingCountText" class="remaining-text">0개 품목이 남아 있어요.</span>
@@ -691,7 +689,7 @@
         <button type="button" class="modal-close" onclick="closeHistoryModal()">&times;</button>
       </div>
       <div id="historyModalBody" class="modal-body">
-        <!-- 히스토리 카드 목록 렌더링 -->
+        <!-- 히스토리 카드 목록 -->
       </div>
     </div>
   </div>
@@ -793,12 +791,12 @@
     return { val: 1, unit: str };
   }
 
-  // 현재 연도-월 키 반환 (예: "2026-09")
+  // YYYY/MM 포맷 반환 (예: "2026/09")
   function getCurrentYearMonth() {
     const d = new Date();
     const yyyy = d.getFullYear();
     const mm = String(d.getMonth() + 1).padStart(2, "0");
-    return `${yyyy}-${mm}`;
+    return `${yyyy}/${mm}`;
   }
 
   const STORES = ["ALL", "Costco", "HEB", "Trader Joe's", "H-Mart", "Kroger", "기타", "상관없음"];
@@ -1201,7 +1199,7 @@
     }
   }
 
-  // 월 마감 & 갱신 (Renew): 이번 달 완료 내역을 히스토리에 기록하고 새 달 시작
+  // 월 마감 & 갱신 (Renew)
   function renewMonthlyCycle() {
     const currentMonth = getCurrentYearMonth();
     const completedItems = items.filter(it => it.completed);
@@ -1218,8 +1216,8 @@
                        `확인을 누르면 이번 달 내역이 히스토리에 영구 저장되고, 완료 목록이 새로 갱신됩니다.`;
 
     if (confirm(confirmMsg)) {
-      // 1. 히스토리에 월별 요약 저장
-      const existingHistory = historyData[currentMonth] || { items: [], total: 0 };
+      const safeKey = currentMonth.replace("/", "_");
+      const existingHistory = historyData[safeKey] || { items: [], total: 0 };
       const combinedItems = (existingHistory.items || []).concat(
         completedItems.map(it => ({
           name: it.name,
@@ -1230,14 +1228,13 @@
       );
       const combinedTotal = (existingHistory.total || 0) + monthSum;
 
-      historyRef.child(currentMonth).set({
+      historyRef.child(safeKey).set({
         month: currentMonth,
         total: Math.round(combinedTotal * 100) / 100,
         items: combinedItems,
         closedAt: Date.now()
       });
 
-      // 2. 현재 완료된 항목들 정리(삭제)하여 리스트 비우기
       const updates = {};
       completedItems.forEach(it => {
         updates[it.key] = null;
@@ -1253,17 +1250,18 @@
     const modalBody = document.getElementById("historyModalBody");
     modalBody.innerHTML = "";
 
-    const months = Object.keys(historyData).sort().reverse();
+    const keys = Object.keys(historyData).sort().reverse();
 
-    if (months.length === 0) {
+    if (keys.length === 0) {
       modalBody.innerHTML = `
         <div style="text-align: center; color: #a49b8f; padding: 36px 10px; font-size: 13.5px;">
           저장된 월별 지출 히스토리가 없습니다.<br>[이번 달 마감 & 갱신]을 진행하면 여기에 차곡차곡 누적됩니다.
         </div>
       `;
     } else {
-      months.forEach(mKey => {
-        const h = historyData[mKey];
+      keys.forEach(k => {
+        const h = historyData[k];
+        const displayMonth = h.month || k.replace("_", "/");
         const card = document.createElement("div");
         card.className = "history-card";
 
@@ -1275,7 +1273,7 @@
 
         card.innerHTML = `
           <div class="history-month-row">
-            <span class="history-month-title">📅 ${mKey}</span>
+            <span class="history-month-title">📅 ${displayMonth}</span>
             <span class="history-month-total">$${(Number(h.total) || 0).toFixed(2)}</span>
           </div>
           <div class="history-item-tags">
@@ -1399,10 +1397,10 @@
     const pendingItems = items.filter(it => !it.completed);
     const completedItems = items.filter(it => it.completed);
 
-    // 1. 장바구니 예상 금액 (미완료) 전체 금액 총합
+    // 1. 장바구니 예상 금액: 구매할 품목(미완료) 금액 합산
     const cartPendingTotal = pendingItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
     
-    // 2. 이번 달 구매한 금액 = 이번 달(또는 현재 완료 목록)의 완료 항목 금액 총합
+    // 2. 이번 달 구매한 금액: 이번 달(YYYY/MM) 완료 품목 금액 합산
     const currentMonth = getCurrentYearMonth();
     const monthCompletedTotal = completedItems
       .filter(it => !it.completedMonth || it.completedMonth === currentMonth)
