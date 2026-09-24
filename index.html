@@ -397,11 +397,6 @@
       line-height: 1.35; 
       color: var(--text-dark);
     }
-    .item-match-en {
-      font-size: 11.5px;
-      color: #928b80;
-      font-style: italic;
-    }
     .item-sub-tags { display: flex; gap: 6px; align-items: center; margin-top: 3px; font-size: 11.5px; flex-wrap: wrap; }
     .item-cat-text { color: var(--text-muted); }
     .store-badge {
@@ -578,7 +573,7 @@
       </div>
     </div>
 
-    <!-- 수정된 총 금액 & 이번 달 지출 요약 카드 -->
+    <!-- 총 금액 & 이번 달 지출 요약 카드 -->
     <div class="cost-summary-card">
       <div class="cost-main-row">
         <div class="cost-info-left">
@@ -1136,7 +1131,6 @@
 
     itemsRef.push({
       name: name,
-      enMatch: matchedData.matchedEn || "",
       qty: qty,
       cat: resolvedCat,
       store: resolvedStore,
@@ -1352,7 +1346,6 @@
     const author = getMemberInfo(item.addedBy);
     const icon = getItemEmoji(item.name, item.cat);
     const storeTag = (item.store && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
-    const enLabel = item.enMatch ? `<span class="item-match-en">(${item.enMatch})</span>` : "";
     const priceDisplay = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
     const qtyText = item.qty ? item.qty : "1";
 
@@ -1363,7 +1356,7 @@
         <div class="checkbox-box" onclick="toggleComplete('${item.key}', ${item.completed})"></div>
         <span class="item-icon">${icon}</span>
         <div class="item-text-wrap">
-          <span class="item-name-text">${item.name} ${enLabel}</span>
+          <span class="item-name-text">${item.name}</span>
           <div class="item-sub-tags">
             <span class="item-cat-text">${item.cat}</span>
             ${storeTag}
@@ -1397,10 +1390,8 @@
     const pendingItems = items.filter(it => !it.completed);
     const completedItems = items.filter(it => it.completed);
 
-    // 1. 장바구니 예상 금액: 구매할 품목(미완료) 금액 합산
     const cartPendingTotal = pendingItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
     
-    // 2. 이번 달 구매한 금액: 이번 달(YYYY/MM) 완료 품목 금액 합산
     const currentMonth = getCurrentYearMonth();
     const monthCompletedTotal = completedItems
       .filter(it => !it.completedMonth || it.completedMonth === currentMonth)
