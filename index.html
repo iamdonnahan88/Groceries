@@ -15,12 +15,14 @@
       --card-bg: #ffffff;
       --primary-green: #375b42;
       --primary-green-hover: #294432;
+      --pastel-dot-empty: #ebdcd3;
+      --pastel-dot-filled: #4a7558;
       --text-dark: #223326;
       --text-muted: #7d8b82;
       --border-soft: #ebdccb;
       --border-light: #ece9e2;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     body {
       background-color: var(--bg-cream);
       min-height: 100vh;
@@ -36,39 +38,122 @@
       background: #fdfbf7;
       border: 1px solid var(--border-soft);
       border-radius: 28px;
-      padding: 40px 32px;
+      padding: 38px 28px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-      margin-top: 20px;
+      margin-top: 16px;
     }
-    .select-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
-    .basket-box { width: 50px; height: 50px; background: #eaf0e8; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .select-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+    .basket-box { width: 48px; height: 48px; background: #eaf0e8; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
     .sub-brand { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: #a48771; }
-    .select-title-box { text-align: center; margin-bottom: 28px; }
+    .select-title-box { text-align: center; margin-bottom: 26px; }
     .badge-sub { font-size: 14px; font-weight: 700; color: var(--primary-green); display: block; margin-bottom: 8px; }
-    .select-title-box h1 { font-size: 32px; line-height: 1.35; margin-bottom: 10px; font-weight: 800; }
-    .select-title-box p { color: var(--text-muted); font-size: 15px; }
+    .select-title-box h1 { font-size: 30px; line-height: 1.35; margin-bottom: 10px; font-weight: 800; }
+    .select-title-box p { color: var(--text-muted); font-size: 14.5px; }
 
     .member-input-wrap { display: flex; gap: 8px; background: #f3eee5; padding: 6px; border-radius: 12px; margin-bottom: 24px; }
     .member-input-wrap input { flex: 1; border: none; padding: 12px 14px; border-radius: 8px; outline: none; font-size: 14px; background: #fff; }
     .btn-member-add { background: var(--primary-green); color: white; border: none; padding: 0 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 
-    .members-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 28px; }
+    .members-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px; }
     .user-card {
       background: #ffffff;
       border: 1.5px solid #ece4d8;
       border-radius: 20px;
-      padding: 24px 16px;
+      padding: 22px 14px;
       text-align: center;
       cursor: pointer;
       position: relative;
-      transition: transform 0.15s, box-shadow 0.15s;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s;
     }
-    .user-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
-    .user-avatar { width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 12px; }
-    .user-card-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
-    .user-card-sub { font-size: 13px; color: #a0a0a0; }
+    .user-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.05); }
+    .user-card.active-pin { border-color: var(--primary-green); background: #fbfdfa; }
+    .user-avatar { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 10px; }
+    .user-card-name { font-size: 17px; font-weight: 800; margin-bottom: 3px; }
+    .user-card-sub { font-size: 12.5px; color: #a0a0a0; }
     .btn-member-del { position: absolute; top: 10px; right: 12px; background: none; border: none; font-size: 18px; color: #ccc; cursor: pointer; }
     .btn-member-del:hover { color: #e53e3e; }
+
+    /* 심플 파스텔 도트 + 키패드 */
+    #pinSection {
+      display: none;
+      background: #ffffff;
+      border: 1.5px solid #e3d9cc;
+      border-radius: 22px;
+      padding: 24px 20px 20px;
+      margin-bottom: 22px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(74, 117, 88, 0.08);
+      animation: fadeInSlide 0.25s ease-out;
+    }
+    @keyframes fadeInSlide {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 파스텔톤 동그라미 2개 */
+    .dots-wrap {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .pin-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background-color: var(--pastel-dot-empty);
+      border: 2px solid #dfcfc4;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .pin-dot.filled {
+      background-color: var(--pastel-dot-filled);
+      border-color: var(--pastel-dot-filled);
+      transform: scale(1.15);
+      box-shadow: 0 3px 8px rgba(74, 117, 88, 0.3);
+    }
+    .pin-dot.shake {
+      animation: shake 0.35s ease;
+      background-color: #e5877f !important;
+      border-color: #e5877f !important;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    /* 숫자 키패드 */
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-width: 250px;
+      margin: 0 auto;
+    }
+    .num-btn {
+      aspect-ratio: 1.4;
+      background: #faf7f2;
+      border: 1px solid #ebdccf;
+      border-radius: 14px;
+      font-size: 19px;
+      font-weight: 700;
+      color: #3b4d40;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.12s ease;
+    }
+    .num-btn:active {
+      transform: scale(0.93);
+      background: #ebdccf;
+    }
+    .num-btn.btn-back {
+      font-size: 15px;
+      color: #938275;
+      background: #f3ece4;
+    }
+
     .slogan { text-align: center; font-size: 13px; font-style: italic; color: #9c9186; }
 
     /* 페이지 2: 장보기 메인 */
@@ -237,7 +322,31 @@
       <button type="button" class="btn-member-add" onclick="addMember()">추가</button>
     </div>
 
+    <!-- 카드 목록 -->
     <div id="membersContainer" class="members-grid"></div>
+
+    <!-- 텍스트 없이 동그라미 2개 + 미니 키패드만 표시되는 영역 -->
+    <div id="pinSection">
+      <div class="dots-wrap">
+        <div id="pinDot0" class="pin-dot"></div>
+        <div id="pinDot1" class="pin-dot"></div>
+      </div>
+
+      <div class="numpad">
+        <button type="button" class="num-btn" onclick="pressPin('1')">1</button>
+        <button type="button" class="num-btn" onclick="pressPin('2')">2</button>
+        <button type="button" class="num-btn" onclick="pressPin('3')">3</button>
+        <button type="button" class="num-btn" onclick="pressPin('4')">4</button>
+        <button type="button" class="num-btn" onclick="pressPin('5')">5</button>
+        <button type="button" class="num-btn" onclick="pressPin('6')">6</button>
+        <button type="button" class="num-btn" onclick="pressPin('7')">7</button>
+        <button type="button" class="num-btn" onclick="pressPin('8')">8</button>
+        <button type="button" class="num-btn" onclick="pressPin('9')">9</button>
+        <button type="button" class="num-btn btn-back" onclick="closePinSection()">취소</button>
+        <button type="button" class="num-btn" onclick="pressPin('0')">0</button>
+        <button type="button" class="num-btn btn-back" onclick="deletePin()">⌫</button>
+      </div>
+    </div>
 
     <p class="slogan">가족 모두가 함께 쓰는 실시간 장보기 🌿</p>
   </div>
@@ -342,9 +451,6 @@
 </div>
 
 <script>
-  // ==========================================
-  // Donna 전용 2자리 비밀번호 설정 (필요시 수정 가능)
-  // ==========================================
   const DONNA_PIN = "88";
 
   const firebaseConfig = {
@@ -364,6 +470,13 @@
 
   const STORES = ["전체", "Costco", "Trader Joe's", "H-Mart", "HEB", "Kroger", "기타", "상관없음"];
   let selectedStoreFilter = "전체";
+
+  let members = [];
+  let items = [];
+  let currentUser = null;
+
+  let currentPinInput = "";
+  let pendingDonnaMember = null;
 
   const categoryIcons = {
     "채소·과일": "🥬",
@@ -444,10 +557,6 @@
     { bg: "#f07897", emoji: "👱" }
   ];
 
-  let members = [];
-  let items = [];
-  let currentUser = null;
-
   membersRef.on("value", snapshot => {
     const data = snapshot.val();
     members = data ? Object.keys(data).map(key => ({ ...data[key], key })) : [];
@@ -476,12 +585,10 @@
     }
 
     members.forEach(member => {
-      const card = document.createElement("div");
-      card.className = "user-card";
-      card.onclick = () => selectMember(member);
-
       const isDonna = member.name.trim().toLowerCase() === "donna";
-      const subLabel = isDonna ? "🔒 PIN 2자리" : "목록 열기";
+      const card = document.createElement("div");
+      card.className = `user-card ${isDonna && pendingDonnaMember ? "active-pin" : ""}`;
+      card.onclick = () => onMemberCardClick(member);
 
       card.innerHTML = `
         <button class="btn-member-del" title="삭제" onclick="deleteMember(event, '${member.key}')">×</button>
@@ -489,7 +596,7 @@
           <span>${member.emoji}</span>
         </div>
         <div class="user-card-name">${member.name}</div>
-        <div class="user-card-sub">${subLabel}</div>
+        <div class="user-card-sub">목록 열기</div>
       `;
       container.appendChild(card);
     });
@@ -519,23 +626,80 @@
       if (currentUser && currentUser.key === key) {
         currentUser = null;
       }
+      if (pendingDonnaMember && pendingDonnaMember.key === key) {
+        closePinSection();
+      }
     }
   }
 
-  // Donna 선택 시 2자리 숫자 PIN 확인
-  function selectMember(member) {
+  function onMemberCardClick(member) {
     const isDonna = member.name.trim().toLowerCase() === "donna";
 
     if (isDonna) {
-      const inputPin = prompt("Donna 전용 2자리 비밀번호를 입력하세요:");
-      if (inputPin === null) return; // 취소한 경우
-
-      if (inputPin !== DONNA_PIN) {
-        alert("비밀번호가 올바르지 않습니다.");
-        return;
-      }
+      pendingDonnaMember = member;
+      currentPinInput = "";
+      updateDots();
+      document.getElementById("pinSection").style.display = "block";
+      renderMembers();
+      document.getElementById("pinSection").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    } else {
+      closePinSection();
+      enterApp(member);
     }
+  }
 
+  function pressPin(digit) {
+    if (currentPinInput.length >= 2) return;
+    currentPinInput += digit;
+    updateDots();
+
+    if (currentPinInput.length === 2) {
+      setTimeout(verifyPin, 140);
+    }
+  }
+
+  function deletePin() {
+    if (currentPinInput.length > 0) {
+      currentPinInput = currentPinInput.slice(0, -1);
+      updateDots();
+    }
+  }
+
+  function closePinSection() {
+    pendingDonnaMember = null;
+    currentPinInput = "";
+    document.getElementById("pinSection").style.display = "none";
+    renderMembers();
+  }
+
+  function updateDots() {
+    const d0 = document.getElementById("pinDot0");
+    const d1 = document.getElementById("pinDot1");
+    d0.classList.toggle("filled", currentPinInput.length >= 1);
+    d1.classList.toggle("filled", currentPinInput.length >= 2);
+    d0.classList.remove("shake");
+    d1.classList.remove("shake");
+  }
+
+  function verifyPin() {
+    const d0 = document.getElementById("pinDot0");
+    const d1 = document.getElementById("pinDot1");
+
+    if (currentPinInput === DONNA_PIN) {
+      const memberToEnter = pendingDonnaMember;
+      closePinSection();
+      enterApp(memberToEnter);
+    } else {
+      d0.classList.add("shake");
+      d1.classList.add("shake");
+      setTimeout(() => {
+        currentPinInput = "";
+        updateDots();
+      }, 450);
+    }
+  }
+
+  function enterApp(member) {
     currentUser = member;
     document.getElementById("page-select").style.display = "none";
     document.getElementById("page-grocery").style.display = "block";
@@ -547,6 +711,7 @@
     currentUser = null;
     document.getElementById("page-grocery").style.display = "none";
     document.getElementById("page-select").style.display = "block";
+    closePinSection();
     renderMembers();
   }
 
