@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>우리 장보기 목록</title>
+  <style>
+    :root {
+      --bg-cream: #fbf9f4;
+      --card-bg: #ffffff;
+      --primary-green: #375b42;
+      --primary-green-hover: #294432;
+      --text-dark: #223326;
+      --text-muted: #7d8b82;
+      --border-soft: #ebdccb;
+      --border-light: #ece9e2;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body {
+      background-color: var(--bg-cream);
+      min-height: 100vh;
+      color: var(--text-dark);
+      padding: 30px 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .container { width: 100%; max-width: 680px; }
+
+    /* --- [페이지 1: 사용자 선택 및 추가 화면] --- */
+    #page-select {
+      background: #fdfbf7;
+      border: 1px solid var(--border-soft);
+      border-radius: 28px;
+      padding: 40px 32px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+      margin-top: 20px;
+    }
+    .select-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    .basket-box { width: 50px; height: 50px; background: #eaf0e8; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .sub-brand { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: #a48771; }
+    .select-title-box { text-align: center; margin-bottom: 28px; }
+    .badge-sub { font-size: 14px; font-weight: 700; color: var(--primary-green); display: block; margin-bottom: 8px; }
+    .select-title-box h1 { font-size: 32px; line-height: 1.35; margin-bottom: 10px; font-weight: 800; }
+    .select-title-box p { color: var(--text-muted); font-size: 15px; }
+
+    .member-input-wrap { display: flex; gap: 8px; background: #f3eee5; padding: 6px; border-radius: 12px; margin-bottom: 24px; }
+    .member-input-wrap input { flex: 1; border: none; padding: 12px 14px; border-radius: 8px; outline: none; font-size: 14px; background: #fff; }
+    .btn-member-add { background: var(--primary-green); color: white; border: none; padding: 0 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+    .members-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 28px; }
+    .user-card {
+      background: #ffffff;
+      border: 1.5px solid #ece4d8;
+      border-radius: 20px;
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .user-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.06); }
+    .user-avatar { width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 12px; }
+    .user-card-name { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+    .user-card-sub { font-size: 13px; color: #a0a0a0; }
+    .btn-member-del { position: absolute; top: 10px; right: 12px; background: none; border: none; font-size: 18px; color: #ccc; cursor: pointer; }
+    .btn-member-del:hover { color: #e53e3e; }
+    .slogan { text-align: center; font-size: 13px; font-style: italic; color: #9c9186; }
+
+    /* --- [페이지 2: 장보기 메인 화면] --- */
+    #page-grocery { display: none; }
+    .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+    .brand-group { display: flex; align-items: center; gap: 12px; }
+    .brand-group h2 { font-size: 18px; font-weight: 800; color: #1e3324; }
+    .brand-group span { font-size: 12px; color: var(--text-muted); }
+    .current-user-pill {
+      display: flex; align-items: center; gap: 8px; background: #ffffff;
+      padding: 6px 14px; border-radius: 24px; border: 1px solid var(--border-light);
+      cursor: pointer; font-size: 14px; font-weight: 700;
+    }
+    .user-tag-avatar { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+
+    /* 상단 프로그레스 및 타이틀 */
+    .hero-grocery { margin-bottom: 22px; }
+    .hero-grocery .tag { font-size: 13px; color: var(--primary-green); font-weight: 700; }
+    .hero-grocery h1 { font-size: 30px; font-weight: 800; margin: 6px 0 10px; }
+    .progress-bar-wrap { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+    .remaining-text { font-size: 14px; color: var(--text-muted); }
+    .bar-container { display: flex; align-items: center; gap: 10px; }
+    .bar-outer { width: 140px; height: 7px; background: #e5ebe4; border-radius: 10px; overflow: hidden; }
+    .bar-inner { height: 100%; background: var(--primary-green); width: 0%; transition: width 0.3s ease; }
+    .bar-label { font-size: 12px; color: var(--text-muted); }
+
+    /* 품목 추가 카드 */
+    .add-box {
+      background: #ffffff; border-radius: 18px; padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03); border: 1px solid var(--border-light);
+      margin-bottom: 28px;
+    }
+    .input-row-1 { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f0f0ed; padding-bottom: 12px; margin-bottom: 12px; }
+    .input-row-1 .plus { font-size: 24px; color: var(--primary-green); font-weight: 300; }
+    .input-row-1 input { flex: 1; border: none; outline: none; font-size: 16px; color: var(--text-dark); }
+    .input-row-1 input::placeholder { color: #b4bdb6; }
+    .input-row-2 { display: flex; gap: 8px; }
+    .input-qty { width: 35%; padding: 11px 14px; border: 1px solid #e1ded6; border-radius: 10px; outline: none; font-size: 14px; }
+    .select-cat { flex: 1; padding: 11px 12px; border: 1px solid #e1ded6; border-radius: 10px; outline: none; font-size: 14px; background: #fff; }
+    .btn-submit { background: var(--primary-green); color: white; border: none; padding: 0 20px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    .btn-submit:hover { background: var(--primary-green-hover); }
+
+    /* 자주 사는 품목 */
+    .quick-section { margin-bottom: 30px; }
+    .quick-title-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
+    .quick-title-bar h3 { font-size: 16px; font-weight: 700; }
+    .quick-title-bar span { font-size: 12px; color: var(--text-muted); }
+    .quick-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+    .quick-grid::-webkit-scrollbar { height: 4px; }
+    .quick-grid::-webkit-scrollbar-thumb { background: #dedad2; border-radius: 4px; }
+    .quick-card {
+      min-width: 100px; background: #ffffff; border: 1px solid var(--border-light);
+      border-radius: 14px; padding: 14px 10px; text-align: center; cursor: pointer;
+      flex-shrink: 0; transition: transform 0.15s;
+    }
+    .quick-card:hover { transform: translateY(-2px); border-color: var(--primary-green); }
+    .quick-card .emoji { font-size: 26px; display: block; margin-bottom: 6px; }
+    .quick-card .name { font-size: 14px; font-weight: 700; display: block; margin-bottom: 2px; }
+    .quick-card .action { font-size: 11px; color: #a4a4a4; }
+
+    /* 목록 영역 */
+    .list-box {
+      background: #ffffff; border-radius: 20px; border: 1px solid var(--border-light);
+      padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .list-header h3 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .badge-count { background: #eef2ed; color: var(--primary-green); padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+    .btn-text-action { background: none; border: none; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+    .btn-text-action:hover { color: var(--text-dark); }
+
+    .items-ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .item-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; border: 1px solid #f1eeea; border-radius: 12px; background: #fff;
+    }
+    .item-left { display: flex; align-items: center; gap: 12px; }
+    .checkbox-box {
+      width: 22px; height: 22px; border-radius: 6px; border: 2px solid #cbd5cf;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .item-icon { font-size: 22px; }
+    .item-text-wrap { display: flex; flex-direction: column; }
+    .item-name-text { font-size: 15px; font-weight: 700; }
+    .item-cat-text { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .item-right { display: flex; align-items: center; gap: 10px; }
+    .author-badge {
+      display: flex; align-items: center; gap: 6px; padding: 4px 10px;
+      border-radius: 14px; font-size: 12px; font-weight: 700;
+    }
+    .author-badge .sub-act { font-size: 11px; font-weight: 400; opacity: 0.8; }
+    .btn-del { background: none; border: none; font-size: 18px; color: #c4c4c4; cursor: pointer; padding: 0 4px; }
+    .btn-del:hover { color: #e53e3e; }
+
+    /* 완료 항목 스타일 */
+    .completed-box { background: #fbfbfa; }
+    .completed-item { opacity: 0.65; background: #fdfdfc; }
+    .completed-item .item-name-text { text-decoration: line-through; }
+    .btn-restore {
+      background: #f0ece6; border: none; width: 26px; height: 26px; border-radius: 6px;
+      font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    .btn-restore:hover { background: #e0ded8; }
+    .restore-tip { font-size: 11px; color: #a4a4a4; margin-left: 6px; }
+
+    .empty-note { text-align: center; color: var(--text-muted); font-size: 14px; padding: 24px 0; }
+    .footer-notice { text-align: center; font-size: 12px; color: #a6a39b; margin-top: -10px; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ==================== 페이지 1: 가족 구성원 선택 화면 ==================== -->
+  <div id="page-select">
+    <div class="select-header">
+      <div class="basket-box">🧺</div>
+      <span class="sub-brand">OUR HOME · OUR LIST</span>
+    </div>
+
+    <div class="select-title-box">
+      <span class="badge-sub">어서 오세요</span>
+      <h1>오늘은 누가<br>장을 보러 가나요?</h1>
+      <p>가족 이름을 추가하고, 카드를 선택하면 장보기 목록이 열려요.</p>
+    </div>
+
+    <!-- 가족 구성원 추가 입력창 -->
+    <div class="member-input-wrap">
+      <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: 엄마, 아빠, 지우)" onkeypress="if(event.key==='Enter') addMember()">
+      <button type="button" class="btn-member-add" onclick="addMember()">추가</button>
+    </div>
+
+    <!-- 구성원 카드 목록 (초기에는 비어 있음) -->
+    <div id="membersContainer" class="members-grid"></div>
+
+    <p class="slogan">오늘도 같이, 필요한 만큼만.</p>
+  </div>
+
+
+  <!-- ==================== 페이지 2: 장보기 메인 화면 ==================== -->
+  <div id="page-grocery">
+    <!-- 상단 네비 -->
+    <div class="top-nav">
+      <div class="brand-group">
+        <div class="basket-box">🧺</div>
+        <div>
+          <h2>우리 장보기 목록</h2>
+          <span id="appFamilyMembers"></span>
+        </div>
+      </div>
+      <div class="current-user-pill" onclick="goToSelectPage()" title="사용자 바꾸기">
+        <div id="navUserAvatar" class="user-tag-avatar">👤</div>
+        <span id="navUserName"></span>
+        <span style="font-size: 11px; color: #888;">⌵</span>
+      </div>
+    </div>
+
+    <!-- 타이틀 & 진행률 -->
+    <div class="hero-grocery">
+      <span class="tag">오늘의 장보기</span>
+      <h1>무엇이 필요한가요?</h1>
+      <div class="progress-bar-wrap">
+        <span id="remainingCountText" class="remaining-text">0개 품목이 남아 있어요.</span>
+        <div class="bar-container">
+          <div class="bar-outer">
+            <div id="progressBarFill" class="bar-inner"></div>
+          </div>
+          <span id="progressRatioText" class="bar-label">0개 중 0개 완료</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 품목 추가 입력 카드 -->
+    <div class="add-box">
+      <div class="input-row-1">
+        <span class="plus">＋</span>
+        <input type="text" id="itemNameInput" placeholder="우유, 바나나, 휴지..." onkeypress="if(event.key==='Enter') addItem()">
+      </div>
+      <div class="input-row-2">
+        <input type="text" id="itemQtyInput" class="input-qty" placeholder="수량 (선택)" onkeypress="if(event.key==='Enter') addItem()">
+        <select id="itemCatSelect" class="select-cat">
+          <option value="채소·과일">채소·과일</option>
+          <option value="유제품·달걀">유제품·달걀</option>
+          <option value="식료품">식료품</option>
+          <option value="고기·생선">고기·생선</option>
+          <option value="생활용품">생활용품</option>
+          <option value="기타">기타</option>
+        </select>
+        <button type="button" class="btn-submit" onclick="addItem()">목록에 추가</button>
+      </div>
+    </div>
+
+    <!-- 자주 사는 품목 (완료 기준 자동 집계) -->
+    <div class="quick-section">
+      <div class="quick-title-bar">
+        <div>
+          <span style="font-size: 12px; color: var(--primary-green); font-weight: 700;">빠른 추가</span>
+          <h3>자주 사는 품목</h3>
+        </div>
+        <span>완료된 품목을 기준으로 자동 정리돼요</span>
+      </div>
+      <div id="quickGridContainer" class="quick-grid"></div>
+    </div>
+
+    <!-- 구매할 품목 목록 -->
+    <div class="list-box">
+      <div class="list-header">
+        <h3>구매할 품목 <span id="pendingBadge" class="badge-count">0</span></h3>
+        <button type="button" class="btn-text-action" onclick="renderApp()">↻ 새로고침</button>
+      </div>
+      <ul id="pendingListUl" class="items-ul"></ul>
+    </div>
+
+    <p class="footer-notice">▪ 가족 구성원의 목록이 함께 공유 및 업데이트됩니다</p>
+
+    <!-- 완료한 품목 목록 -->
+    <div class="list-box completed-box">
+      <div class="list-header">
+        <h3>완료한 품목 (<span id="completedBadge">0</span>)</h3>
+        <button type="button" class="btn-text-action" onclick="clearCompleted()">완료 품목 전체 지우기</button>
+      </div>
+      <ul id="completedListUl" class="items-ul"></ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // 카테고리별 매칭 이모지
+  const categoryIcons = {
+    "채소·과일": "🥬",
+    "유제품·달걀": "🥛",
+    "식료품": "🥫",
+    "고기·생선": "🥩",
+    "생활용품": "🧻",
+    "기타": "🛒"
+  };
+
+  // 품목명에 따른 이모지 자동 매칭
+  function getItemEmoji(name, cat) {
+    if (name.includes("바나나")) return "🍌";
+    if (name.includes("토마토")) return "🍅";
+    if (name.includes("오이")) return "🥒";
+    if (name.includes("아보카도")) return "🥑";
+    if (name.includes("딸기")) return "🍓";
+    if (name.includes("사과")) return "🍎";
+    if (name.includes("치즈")) return "🧀";
+    if (name.includes("샴푸") || name.includes("비누")) return "🧴";
+    if (name.includes("우유")) return "🥛";
+    if (name.includes("계란") || name.includes("달걀")) return "🥚";
+    if (name.includes("빵")) return "🥖";
+    if (name.includes("휴지") || name.includes("봉투")) return "🧻";
+    return categoryIcons[cat] || "🛒";
+  }
+
+  // 구성원 프로필 색상 및 이모지 풀
+  const avatarPool = [
+    { bg: "#466b53", emoji: "👩" },
+    { bg: "#ea9547", emoji: "👧" },
+    { bg: "#4a7ebb", emoji: "👦" },
+    { bg: "#8a66b8", emoji: "👶" },
+    { bg: "#f07897", emoji: "👱" }
+  ];
+
+  // 초기값: 구성원 및 품목 모두 비어있는 상태로 시작
+  let members = [];
+  let currentUser = null;
+  let items = [];
+
+  // ==================== 구성원 관리 기능 ====================
+  function renderMembers() {
+    const container = document.getElementById("membersContainer");
+    container.innerHTML = "";
+
+    if (members.length === 0) {
+      container.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 32px 10px; color: #a49b8f; background: #faf7f0; border-radius: 16px; border: 1px dashed #dcd3c5;">
+          등록된 가족 구성원이 없습니다.<br>위 입력창에서 이름을 추가해 주세요.
+        </div>
+      `;
+      document.getElementById("appFamilyMembers").textContent = "가족 목록";
+      return;
+    }
+
+    members.forEach(member => {
+      const card = document.createElement("div");
+      card.className = "user-card";
+      card.onclick = () => selectMember(member);
+
+      card.innerHTML = `
+        <button class="btn-member-del" title="삭제" onclick="deleteMember(event, ${member.id})">×</button>
+        <div class="user-avatar" style="background-color: ${member.bg};">
+          <span>${member.emoji}</span>
+        </div>
+        <div class="user-card-name">${member.name}</div>
+        <div class="user-card-sub">목록 열기</div>
+      `;
+      container.appendChild(card);
+    });
+
+    document.getElementById("appFamilyMembers").textContent = members.map(m => m.name).join(" + ");
+  }
+
+  function addMember() {
+    const input = document.getElementById("newMemberInput");
+    const name = input.value.trim();
+    if (!name) return;
+
+    const style = avatarPool[members.length % avatarPool.length];
+    members.push({ id: Date.now(), name: name, bg: style.bg, emoji: style.emoji });
+    input.value = "";
+    renderMembers();
+  }
+
+  function deleteMember(e, id) {
+    e.stopPropagation();
+    if (confirm("이 구성원을 삭제하시겠습니까?")) {
+      members = members.filter(m => m.id !== id);
+      if (currentUser && currentUser.id === id) {
+        currentUser = members.length > 0 ? members[0] : null;
+      }
+      renderMembers();
+    }
+  }
+
+  function selectMember(member) {
+    currentUser = member;
+    document.getElementById("page-select").style.display = "none";
+    document.getElementById("page-grocery").style.display = "block";
+    updateNavUser();
+    renderApp();
+  }
+
+  function goToSelectPage() {
+    document.getElementById("page-grocery").style.display = "none";
+    document.getElementById("page-select").style.display = "block";
+    renderMembers();
+  }
+
+  function updateNavUser() {
+    if (!currentUser) return;
+    document.getElementById("navUserName").textContent = currentUser.name;
+    const avatarEl = document.getElementById("navUserAvatar");
+    avatarEl.textContent = currentUser.emoji;
+    avatarEl.style.backgroundColor = currentUser.bg;
+  }
+
+  function getMemberInfo(name) {
+    return members.find(m => m.name === name) || { name: name, emoji: "👤", bg: "#7d8b82" };
+  }
+
+  // ==================== 장보기 목록 기능 ====================
+  function addItem(customName = null, customCat = "기타") {
+    let name = customName;
+    let qty = "";
+    let cat = customCat;
+
+    if (!name) {
+      const nameInput = document.getElementById("itemNameInput");
+      const qtyInput = document.getElementById("itemQtyInput");
+      const catSelect = document.getElementById("itemCatSelect");
+
+      name = nameInput.value.trim();
+      qty = qtyInput.value.trim();
+      cat = catSelect.value;
+
+      if (!name) return;
+
+      nameInput.value = "";
+      qtyInput.value = "";
+      nameInput.focus();
+    }
+
+    items.push({
+      id: Date.now() + Math.random(),
+      name: name,
+      qty: qty,
+      cat: cat,
+      addedBy: currentUser ? currentUser.name : "사용자",
+      completedBy: null,
+      completed: false
+    });
+
+    renderApp();
+  }
+
+  // 완료 체크 시 누가 구매했는지 현재 선택된 사용자로 기록
+  function toggleComplete(id) {
+    const item = items.find(it => it.id === id);
+    if (!item) return;
+
+    if (!item.completed) {
+      item.completed = true;
+      item.completedBy = currentUser ? currentUser.name : "사용자";
+    } else {
+      item.completed = false;
+      item.completedBy = null;
+    }
+    renderApp();
+  }
+
+  function removeItem(id) {
+    items = items.filter(it => it.id !== id);
+    renderApp();
+  }
+
+  function clearCompleted() {
+    if (confirm("완료된 항목을 목록에서 모두 삭제하시겠습니까?")) {
+      items = items.filter(it => !it.completed);
+      renderApp();
+    }
+  }
+
+  // 완료된 항목을 기반으로 자주 사는 품목 자동 갱신
+  function renderQuickAdd() {
+    const counts = {};
+    items.filter(it => it.completed).forEach(it => {
+      counts[it.name] = (counts[it.name] || 0) + 1;
+    });
+
+    const sortedNames = Object.keys(counts).sort((a, b) => counts[b] - counts[a]).slice(0, 7);
+    const container = document.getElementById("quickGridContainer");
+    container.innerHTML = "";
+
+    if (sortedNames.length === 0) {
+      container.innerHTML = `<span style="font-size: 13px; color: #a49b8f; padding: 10px 0;">아직 완료된 품목이 없습니다. 장을 보면 여기에 쌓여요!</span>`;
+      return;
+    }
+
+    sortedNames.forEach(name => {
+      const match = items.find(it => it.name === name);
+      const cat = match ? match.cat : "채소·과일";
+      const emoji = getItemEmoji(name, cat);
+
+      const card = document.createElement("div");
+      card.className = "quick-card";
+      card.onclick = () => addItem(name, cat);
+      card.innerHTML = `
+        <span class="emoji">${emoji}</span>
+        <span class="name">${name}</span>
+        <span class="action">눌러서 추가</span>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  // 전체 화면 렌더링
+  function renderApp() {
+    const pendingListUl = document.getElementById("pendingListUl");
+    const completedListUl = document.getElementById("completedListUl");
+
+    pendingListUl.innerHTML = "";
+    completedListUl.innerHTML = "";
+
+    const pendingItems = items.filter(it => !it.completed);
+    const completedItems = items.filter(it => it.completed);
+
+    // 구매할 품목 렌더링
+    if (pendingItems.length === 0) {
+      pendingListUl.innerHTML = `<li class="empty-note">구매할 품목이 비어있습니다.</li>`;
+    } else {
+      pendingItems.forEach(item => {
+        const author = getMemberInfo(item.addedBy);
+        const icon = getItemEmoji(item.name, item.cat);
+        const qtyDisplay = item.qty ? ` (${item.qty})` : "";
+
+        const li = document.createElement("li");
+        li.className = "item-row";
+        li.innerHTML = `
+          <div class="item-left">
+            <div class="checkbox-box" onclick="toggleComplete(${item.id})"></div>
+            <span class="item-icon">${icon}</span>
+            <div class="item-text-wrap">
+              <span class="item-name-text">${item.name}${qtyDisplay}</span>
+              <span class="item-cat-text">${item.cat}</span>
+            </div>
+          </div>
+          <div class="item-right">
+            <div class="author-badge" style="background-color: ${author.bg}15; color: ${author.bg};">
+              <span>${author.emoji}</span>
+              <span>${author.name} <span class="sub-act">추가</span></span>
+            </div>
+            <button class="btn-del" onclick="removeItem(${item.id})">×</button>
+          </div>
+        `;
+        pendingListUl.appendChild(li);
+      });
+    }
+
+    // 완료한 품목 렌더링
+    if (completedItems.length === 0) {
+      completedListUl.innerHTML = `<li class="empty-note">완료된 품목이 없습니다.</li>`;
+    } else {
+      completedItems.forEach(item => {
+        const buyer = getMemberInfo(item.completedBy || item.addedBy);
+        const li = document.createElement("li");
+        li.className = "item-row completed-item";
+        li.innerHTML = `
+          <div class="item-left">
+            <button class="btn-restore" onclick="toggleComplete(${item.id})" title="다시 목록으로 복구">↩</button>
+            <div class="item-text-wrap">
+              <span class="item-name-text">${item.name}</span>
+            </div>
+            <div class="author-badge" style="background-color: ${buyer.bg}15; color: ${buyer.bg};">
+              <span>${buyer.emoji}</span>
+              <span>${buyer.name} <span class="sub-act">완료</span></span>
+            </div>
+            <span class="restore-tip">↩를 누르면 다시 목록으로</span>
+          </div>
+          <button class="btn-del" onclick="removeItem(${item.id})">×</button>
+        `;
+        completedListUl.appendChild(li);
+      });
+    }
+
+    // 상단 진행률 및 카운트
+    const total = items.length;
+    const compCount = completedItems.length;
+    const pendCount = pendingItems.length;
+
+    document.getElementById("pendingBadge").textContent = pendCount;
+    document.getElementById("completedBadge").textContent = compCount;
+    document.getElementById("remainingCountText").textContent = `${pendCount}개 품목이 남아 있어요.`;
+    document.getElementById("progressRatioText").textContent = `${total}개 중 ${compCount}개 완료`;
+
+    const percent = total === 0 ? 0 : Math.round((compCount / total) * 100);
+    document.getElementById("progressBarFill").style.width = percent + "%";
+
+    renderQuickAdd();
+  }
+
+  // 초기 실행
+  renderMembers();
+</script>
+
+</body>
+</html>
