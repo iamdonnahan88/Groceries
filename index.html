@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>오늘 뭐 사지👀</title>
   
-  <!-- 가독성 높은 프리텐다드(Pretendard) 웹폰트 로드 -->
+  <!-- Pretendard 웹폰트 -->
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
-  <!-- Firebase SDK 라이브러리 로드 -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
@@ -24,12 +24,14 @@
       --text-muted: #7d8b82;
       --border-soft: #ebdccb;
       --border-light: #ece9e2;
+      --accent-price: #b8621b;
+      --accent-badge: #eaf0e8;
     }
     * { 
       box-sizing: border-box; 
       margin: 0; 
       padding: 0; 
-      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; 
+      font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Segoe UI", sans-serif; 
       -webkit-tap-highlight-color: transparent; 
       letter-spacing: -0.02em;
     }
@@ -50,7 +52,7 @@
       max-width: 500px;
     }
 
-    /* 페이지 1: 화면 전체를 꽉 채우는 프레임 테두리 */
+    /* 화면 1: 가족 구성원 선택 */
     #page-select {
       background: #fdfbf7;
       border: 1.5px solid var(--border-soft);
@@ -75,7 +77,6 @@
     .basket-box { width: 42px; height: 42px; background: #eaf0e8; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
     .sub-brand { font-size: 11.5px; font-weight: 700; letter-spacing: 1.5px; color: #a48771; font-family: "Corbel", sans-serif; }
 
-    /* 중앙 정렬 콘텐츠 묶음 */
     .select-body-center {
       display: flex;
       flex-direction: column;
@@ -86,22 +87,17 @@
     }
 
     .select-title-box { text-align: center; margin-bottom: 20px; width: 100%; }
-    
-    /* WELCOME 뱃지 */
     .badge-sub { 
       font-size: 13px; 
       font-weight: 700; 
       color: var(--primary-green); 
       display: block; 
       margin-bottom: 6px; 
-      font-family: "Corbel", -apple-system, sans-serif; 
       letter-spacing: 2px; 
     }
-    
     .select-title-box h1 { font-size: 26px; line-height: 1.32; margin-bottom: 6px; font-weight: 800; }
     .select-title-box p { color: var(--text-muted); font-size: 13.5px; }
 
-    /* 입력 래퍼 */
     .member-input-wrap { 
       display: flex; 
       gap: 6px; 
@@ -133,7 +129,6 @@
       font-weight: 700; 
       cursor: pointer; 
       white-space: nowrap; 
-      flex-shrink: 0; 
       font-size: 13.5px;
     }
 
@@ -152,18 +147,14 @@
       text-align: center;
       cursor: pointer;
       position: relative;
-      transition: transform 0.15s, box-shadow 0.15s, border-color 0.2s;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
     .user-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.05); }
     .user-avatar { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 8px; }
     .user-card-name { font-size: 15.5px; font-weight: 800; margin-bottom: 4px; }
     .user-card-sub { font-size: 12.5px; color: #a0a0a0; display: flex; align-items: center; justify-content: center; gap: 5px; }
     
-    .pin-inline-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
+    .pin-inline-wrap { display: inline-flex; align-items: center; gap: 5px; }
     .pin-mini-dot {
       width: 12px;
       height: 12px;
@@ -201,7 +192,7 @@
     .btn-member-del:hover { color: #e53e3e; }
     .slogan { text-align: center; font-size: 12px; font-style: italic; color: #9c9186; width: 100%; flex-shrink: 0; }
 
-    /* 페이지 2: 장보기 메인 (화면 맨 위부터 정확히 시작) */
+    /* 화면 2: 장보기 메인 */
     #page-grocery { 
       display: none; 
       width: 100%; 
@@ -212,7 +203,7 @@
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
-      margin-bottom: 24px; 
+      margin-bottom: 20px; 
       width: 100%;
     }
     .brand-group { display: flex; align-items: center; gap: 12px; }
@@ -226,24 +217,42 @@
     }
     .user-tag-avatar { width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
 
-    .hero-grocery { margin-bottom: 22px; }
-    .hero-grocery .tag { font-size: 13px; color: var(--primary-green); font-weight: 700; }
-    .hero-grocery h1 { font-size: 28px; font-weight: 800; margin: 6px 0 10px; }
-    .progress-bar-wrap { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-    .remaining-text { font-size: 14px; color: var(--text-muted); }
-    .bar-container { display: flex; align-items: center; gap: 10px; }
-    .bar-outer { width: 140px; height: 7px; background: #e5ebe4; border-radius: 10px; overflow: hidden; }
+    /* 총 예상 금액 요약 카드 */
+    .cost-summary-card {
+      background: linear-gradient(135deg, #375b42 0%, #24412e 100%);
+      color: #fff;
+      border-radius: 20px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 20px rgba(55, 91, 66, 0.16);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cost-info-left span { font-size: 12px; opacity: 0.85; display: block; margin-bottom: 3px; }
+    .cost-info-left h3 { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; }
+    .cost-info-right { text-align: right; }
+    .cost-info-right .done-amount { font-size: 12px; opacity: 0.85; }
+    .cost-info-right .done-amount strong { font-size: 14px; color: #a4e1b8; }
+
+    .hero-grocery { margin-bottom: 20px; }
+    .hero-grocery .tag { font-size: 12px; color: var(--primary-green); font-weight: 700; letter-spacing: 1px; }
+    .hero-grocery h1 { font-size: 26px; font-weight: 800; margin: 4px 0 8px; }
+    .progress-bar-wrap { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+    .remaining-text { font-size: 13.5px; color: var(--text-muted); }
+    .bar-container { display: flex; align-items: center; gap: 8px; }
+    .bar-outer { width: 130px; height: 7px; background: #e5ebe4; border-radius: 10px; overflow: hidden; }
     .bar-inner { height: 100%; background: var(--primary-green); width: 0%; transition: width 0.3s ease; }
     .bar-label { font-size: 12px; color: var(--text-muted); }
 
     /* 입력창 */
     .add-box {
-      background: #ffffff; border-radius: 18px; padding: 18px;
+      background: #ffffff; border-radius: 18px; padding: 16px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.03); border: 1px solid var(--border-light);
-      margin-bottom: 26px;
+      margin-bottom: 22px;
     }
-    .input-row-1 { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f0f0ed; padding-bottom: 12px; margin-bottom: 12px; }
-    .input-row-1 .plus { font-size: 24px; color: var(--primary-green); font-weight: 300; }
+    .input-row-1 { display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f0f0ed; padding-bottom: 10px; margin-bottom: 10px; }
+    .input-row-1 .plus { font-size: 22px; color: var(--primary-green); font-weight: 300; }
     .input-row-1 input { flex: 1; border: none; outline: none; font-size: 15px; color: var(--text-dark); }
     .input-row-1 input::placeholder { color: #b4bdb6; }
     
@@ -254,7 +263,7 @@
       flex-wrap: nowrap; 
     }
     .input-qty { 
-      width: 48px; 
+      width: 50px; 
       min-width: 44px; 
       padding: 9px 4px; 
       border: 1px solid #e1ded6; 
@@ -279,7 +288,7 @@
       background: var(--primary-green); 
       color: white; 
       border: none; 
-      padding: 9px 12px; 
+      padding: 9px 14px; 
       border-radius: 10px; 
       font-weight: 700; 
       font-size: 13px; 
@@ -290,32 +299,32 @@
     .btn-submit:hover { background: var(--primary-green-hover); }
 
     /* 빠른 추가 */
-    .quick-section { margin-bottom: 26px; }
-    .quick-title-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 12px; }
-    .quick-title-bar h3 { font-size: 16px; font-weight: 700; }
-    .quick-title-bar span { font-size: 12px; color: var(--text-muted); }
-    .quick-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+    .quick-section { margin-bottom: 24px; }
+    .quick-title-bar { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 10px; }
+    .quick-title-bar h3 { font-size: 15px; font-weight: 700; }
+    .quick-title-bar span { font-size: 11.5px; color: var(--text-muted); }
+    .quick-grid { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
     .quick-grid::-webkit-scrollbar { height: 4px; }
     .quick-grid::-webkit-scrollbar-thumb { background: #dedad2; border-radius: 4px; }
     .quick-card {
       min-width: 95px; background: #ffffff; border: 1px solid var(--border-light);
-      border-radius: 14px; padding: 12px 8px; text-align: center; cursor: pointer;
+      border-radius: 14px; padding: 10px 8px; text-align: center; cursor: pointer;
       flex-shrink: 0; transition: transform 0.15s;
     }
     .quick-card:hover { transform: translateY(-2px); border-color: var(--primary-green); }
-    .quick-card .emoji { font-size: 24px; display: block; margin-bottom: 4px; }
-    .quick-card .name { font-size: 13.5px; font-weight: 700; display: block; margin-bottom: 2px; }
-    .quick-card .action { font-size: 11px; color: #a4a4a4; }
+    .quick-card .emoji { font-size: 22px; display: block; margin-bottom: 3px; }
+    .quick-card .name { font-size: 13px; font-weight: 700; display: block; margin-bottom: 2px; }
+    .quick-card .sub-est { font-size: 10.5px; color: var(--accent-price); font-weight: 700; }
 
     /* Store별 필터 탭 */
     .store-filter-bar {
-      display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 14px;
-      margin-bottom: 16px; scrollbar-width: none;
+      display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 12px;
+      margin-bottom: 14px; scrollbar-width: none;
     }
     .store-filter-bar::-webkit-scrollbar { display: none; }
     .filter-tab {
       background: #f1ede6; border: 1px solid #e2ddd5; border-radius: 20px;
-      padding: 6px 14px; font-size: 13px; font-weight: 700; color: #62615d;
+      padding: 6px 13px; font-size: 12.5px; font-weight: 700; color: #62615d;
       white-space: nowrap; cursor: pointer; transition: all 0.15s ease;
     }
     .filter-tab.active {
@@ -325,25 +334,26 @@
     /* 목록 영역 */
     .list-box {
       background: #ffffff; border-radius: 20px; border: 1px solid var(--border-light);
-      padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+      padding: 18px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);
     }
     .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .list-header h3 { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .list-header h3 { font-size: 15.5px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
     .badge-count { background: #eef2ed; color: var(--primary-green); padding: 2px 8px; border-radius: 12px; font-size: 12px; }
-    .sync-status { font-size: 12px; color: #375b42; font-weight: 600; }
+    .sync-status { font-size: 11.5px; color: #375b42; font-weight: 600; }
+    .btn-text-action { background: none; border: none; font-size: 12px; color: #a49182; cursor: pointer; text-decoration: underline; }
 
     /* 마트별 섹션 그룹 */
     .store-group { margin-bottom: 18px; }
     .store-group:last-child { margin-bottom: 0; }
     .store-group-title {
       font-size: 13px; font-weight: 800; color: #6b5c4d; background: #faf6f0;
-      padding: 6px 12px; border-radius: 8px; margin-bottom: 8px; display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 11px; border-radius: 8px; margin-bottom: 8px; display: inline-flex; align-items: center; gap: 6px;
     }
 
-    .items-ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .items-ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
     .item-row {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 12px; border: 1px solid #f1eeea; border-radius: 12px; background: #fff;
+      padding: 10px 12px; border: 1px solid #f1eeea; border-radius: 12px; background: #fff;
       gap: 10px;
     }
     .item-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
@@ -355,27 +365,49 @@
     .item-text-wrap { display: flex; flex-direction: column; flex: 1; min-width: 0; }
     
     .item-name-text { 
-      font-size: 15px; 
+      font-size: 14.5px; 
       font-weight: 700; 
       white-space: normal; 
       word-break: break-word; 
       line-height: 1.35; 
       color: var(--text-dark);
     }
-    .item-sub-tags { display: flex; gap: 6px; align-items: center; margin-top: 4px; font-size: 12px; flex-wrap: wrap; }
+    .item-match-en {
+      font-size: 11.5px;
+      color: #928b80;
+      font-style: italic;
+    }
+    .item-sub-tags { display: flex; gap: 6px; align-items: center; margin-top: 3px; font-size: 11.5px; flex-wrap: wrap; }
     .item-cat-text { color: var(--text-muted); }
     .store-badge {
-      background: #f4ede4; color: #735438; padding: 1px 6px; border-radius: 6px; font-weight: 600; font-size: 11px;
+      background: #f4ede4; color: #735438; padding: 1px 6px; border-radius: 6px; font-weight: 600; font-size: 10.5px;
     }
+
+    /* 가격 태그 및 편집 */
+    .price-pill {
+      background: #fff6ee;
+      border: 1px solid #fedcc1;
+      color: var(--accent-price);
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .price-pill:hover { background: #ffeeda; }
+    .price-unit { font-size: 10px; font-weight: normal; opacity: 0.8; }
 
     .item-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     
     .author-badge {
       display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px;
-      border-radius: 12px; font-size: 11px; font-weight: 700; line-height: 1;
+      border-radius: 12px; font-size: 10.5px; font-weight: 700; line-height: 1;
       white-space: nowrap;
     }
-    .author-badge .sub-act { font-size: 10px; font-weight: 400; opacity: 0.85; }
     .btn-del { background: none; border: none; font-size: 18px; color: #c4c4c4; cursor: pointer; padding: 2px 4px; line-height: 1; }
     .btn-del:hover { color: #e53e3e; }
 
@@ -384,13 +416,11 @@
     .completed-item { opacity: 0.65; background: #fdfdfc; }
     .completed-item .item-name-text { text-decoration: line-through; }
     .btn-restore {
-      background: #f0ece6; border: none; width: 26px; height: 26px; border-radius: 6px;
-      font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      background: #f0ece6; border: none; width: 24px; height: 24px; border-radius: 6px;
+      font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .btn-restore:hover { background: #e0ded8; }
-    .restore-tip { font-size: 11px; color: #a4a4a4; margin-left: 4px; }
-
-    .empty-note { text-align: center; color: var(--text-muted); font-size: 14px; padding: 24px 0; }
+    .empty-note { text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px 0; }
   </style>
 </head>
 <body>
@@ -419,13 +449,11 @@
       <div id="membersContainer" class="members-grid"></div>
     </div>
 
-    <p class="slogan">우리집 장바구니 LIVE 🌿</p>
-
-    <!-- 키보드 호출용 숨김 입력창 -->
+    <p class="slogan">우리집 스마트 장바구니 LIVE 🌿</p>
     <input type="tel" id="hiddenPinInput" maxlength="2" inputmode="numeric" pattern="[0-9]*" oninput="onPinInputChange(this)">
   </div>
 
-  <!-- 화면 2: 장보기 메인 (정상 상단 바 완벽 노출) -->
+  <!-- 화면 2: 장보기 메인 -->
   <div id="page-grocery">
     <div class="top-nav">
       <div class="brand-group">
@@ -442,8 +470,19 @@
       </div>
     </div>
 
+    <!-- 예상 총액 & 예산 카드 -->
+    <div class="cost-summary-card">
+      <div class="cost-info-left">
+        <span>남은 장보기 예상 총액</span>
+        <h3 id="totalEstCostDisplay">$0.00</h3>
+      </div>
+      <div class="cost-info-right">
+        <div class="done-amount">장바구니 담은 금액: <strong id="completedCostDisplay">$0.00</strong></div>
+      </div>
+    </div>
+
     <div class="hero-grocery">
-      <span class="tag">실시간 공유 장보기</span>
+      <span class="tag">STORE AUTO-PRICE MATCHING</span>
       <h1>무엇이 필요한가요?</h1>
       <div class="progress-bar-wrap">
         <span id="remainingCountText" class="remaining-text">0개 품목이 남아 있어요.</span>
@@ -460,7 +499,7 @@
     <div class="add-box">
       <div class="input-row-1">
         <span class="plus">＋</span>
-        <input type="text" id="itemNameInput" placeholder="타이레놀, 스타벅스 커피, 신라면..." onkeypress="if(event.key==='Enter') addItem()">
+        <input type="text" id="itemNameInput" placeholder="귤, 사과, 삼겹살, 계란, 타이레놀..." onkeypress="if(event.key==='Enter') addItem()">
       </div>
       <div class="input-row-2">
         <input type="text" id="itemQtyInput" class="input-qty" placeholder="수량" onkeypress="if(event.key==='Enter') addItem()">
@@ -475,12 +514,12 @@
         </select>
 
         <select id="itemStoreSelect" class="select-box">
-          <option value="상관없음">Store</option>
           <option value="Costco">Costco</option>
+          <option value="HEB">HEB</option>
           <option value="Trader Joe's">Trader Joe's</option>
           <option value="H-Mart">H-Mart</option>
-          <option value="HEB">HEB</option>
           <option value="Kroger">Kroger</option>
+          <option value="상관없음">Store 선택</option>
           <option value="기타">etc.</option>
         </select>
 
@@ -492,10 +531,10 @@
     <div class="quick-section">
       <div class="quick-title-bar">
         <div>
-          <span style="font-size: 12px; color: var(--primary-green); font-weight: 700;">빠른 추가</span>
+          <span style="font-size: 11.5px; color: var(--primary-green); font-weight: 700;">추천 품목</span>
           <h3>자주 사는 품목</h3>
         </div>
-        <span>완료된 품목을 기준으로 자동 정리돼요</span>
+        <span>예상 단가 자동 적용</span>
       </div>
       <div id="quickGridContainer" class="quick-grid"></div>
     </div>
@@ -507,7 +546,7 @@
     <div class="list-box">
       <div class="list-header">
         <h3>구매할 품목 <span id="pendingBadge" class="badge-count">0</span></h3>
-        <span class="sync-status">● 실시간 동기화 켜짐</span>
+        <span class="sync-status">● 실시간 자동 계산 켜짐</span>
       </div>
       <div id="pendingListContainer"></div>
     </div>
@@ -516,7 +555,7 @@
     <div class="list-box completed-box">
       <div class="list-header">
         <h3>완료한 품목 (<span id="completedBadge">0</span>)</h3>
-        <button type="button" class="btn-text-action" onclick="clearCompleted()">완료 품목 전체 지우기</button>
+        <button type="button" class="btn-text-action" onclick="clearCompleted()">완료 품목 비우기</button>
       </div>
       <ul id="completedListUl" class="items-ul"></ul>
     </div>
@@ -525,6 +564,7 @@
 </div>
 
 <script>
+  // 1. PIN 보안 설정
   const USER_PINS = {
     "donna": "88",
     "sia": "16",
@@ -535,10 +575,10 @@
 
   function getRequiredPin(name) {
     if (!name) return null;
-    const clean = name.trim().toLowerCase();
-    return USER_PINS[clean] || null;
+    return USER_PINS[name.trim().toLowerCase()] || null;
   }
 
+  // 2. Firebase 초기화
   const firebaseConfig = {
     apiKey: "AIzaSyCwDdHF5Fw5d2gMal5H1K3OC9isByJJbOM",
     authDomain: "groceries-39b60.firebaseapp.com",
@@ -554,7 +594,56 @@
   const membersRef = db.ref("members");
   const itemsRef = db.ref("items");
 
-  const STORES = ["ALL", "Costco", "Trader Joe's", "H-Mart", "HEB", "Kroger", "기타", "상관없음"];
+  // 3. 지능형 단어 사전 & 마트별 가격 엔진 (Item Dictionary & Store Catalogs)
+  const ITEM_DICTIONARY = {
+    "귤": { en: "Mandarins / Clementines", cat: "채소·과일", defaultPrices: { "Costco": 7.99, "Trader Joe's": 3.99, "HEB": 4.48, "H-Mart": 5.99, "Kroger": 4.99, "default": 4.99 }, unit: "bag" },
+    "사과": { en: "Fuji / Gala Apples", cat: "채소·과일", defaultPrices: { "Costco": 9.99, "Trader Joe's": 0.99, "HEB": 1.48, "H-Mart": 2.29, "Kroger": 1.99, "default": 2.49 }, unit: "lb/bag" },
+    "바나나": { en: "Organic Bananas", cat: "채소·과일", defaultPrices: { "Costco": 2.29, "Trader Joe's": 0.25, "HEB": 0.54, "H-Mart": 0.79, "Kroger": 0.59, "default": 0.99 }, unit: "bunch" },
+    "양파": { en: "Yellow Onions", cat: "채소·과일", defaultPrices: { "Costco": 6.99, "Trader Joe's": 1.99, "HEB": 1.25, "H-Mart": 1.49, "Kroger": 1.49, "default": 2.29 }, unit: "bag" },
+    "마늘": { en: "Peeled Garlic", cat: "채소·과일", defaultPrices: { "Costco": 5.49, "Trader Joe's": 2.49, "HEB": 1.98, "H-Mart": 3.99, "Kroger": 2.29, "default": 2.99 }, unit: "pk" },
+    "아보카도": { en: "Avocados", cat: "채소·과일", defaultPrices: { "Costco": 5.99, "Trader Joe's": 3.49, "HEB": 0.88, "H-Mart": 1.29, "Kroger": 0.99, "default": 1.50 }, unit: "bag/ea" },
+    "계란": { en: "Pasture Raised Large Eggs", cat: "유제품·달걀", defaultPrices: { "Costco": 7.49, "Trader Joe's": 3.99, "HEB": 3.48, "H-Mart": 4.29, "Kroger": 3.89, "default": 3.99 }, unit: "dz" },
+    "달걀": { en: "Large Eggs (1 Dozen)", cat: "유제품·달걀", defaultPrices: { "Costco": 7.49, "Trader Joe's": 3.99, "HEB": 3.48, "H-Mart": 4.29, "Kroger": 3.89, "default": 3.99 }, unit: "dz" },
+    "우유": { en: "Whole Milk 1 Gallon", cat: "유제품·달걀", defaultPrices: { "Costco": 3.79, "Trader Joe's": 3.69, "HEB": 3.24, "H-Mart": 4.59, "Kroger": 3.49, "default": 3.89 }, unit: "gal" },
+    "버터": { en: "Unsalted Butter (4-pk)", cat: "유제품·달걀", defaultPrices: { "Costco": 11.99, "Trader Joe's": 3.99, "HEB": 4.18, "H-Mart": 5.49, "Kroger": 4.49, "default": 4.49 }, unit: "pk" },
+    "식빵": { en: "Sliced Bread", cat: "유제품·달걀", defaultPrices: { "Costco": 5.99, "Trader Joe's": 2.49, "HEB": 2.28, "H-Mart": 3.99, "Kroger": 2.49, "default": 2.99 }, unit: "ea" },
+    "삼겹살": { en: "Pork Belly (Sliced)", cat: "고기·생선", defaultPrices: { "Costco": 18.99, "Trader Joe's": 6.99, "HEB": 6.49, "H-Mart": 8.99, "Kroger": 6.99, "default": 7.99 }, unit: "lb" },
+    "소고기": { en: "Beef Ribeye / Steak", cat: "고기·생선", defaultPrices: { "Costco": 42.99, "Trader Joe's": 12.99, "HEB": 14.99, "H-Mart": 16.99, "Kroger": 13.99, "default": 15.99 }, unit: "pack" },
+    "닭가슴살": { en: "Boneless Chicken Breast", cat: "고기·생선", defaultPrices: { "Costco": 22.99, "Trader Joe's": 4.99, "HEB": 3.49, "H-Mart": 4.99, "Kroger": 3.99, "default": 4.29 }, unit: "lb/pk" },
+    "연어": { en: "Fresh Atlantic Salmon", cat: "고기·생선", defaultPrices: { "Costco": 28.99, "Trader Joe's": 9.99, "HEB": 10.99, "H-Mart": 12.99, "Kroger": 10.99, "default": 11.99 }, unit: "lb" },
+    "신라면": { en: "Shin Ramyun Pack", cat: "식료품", defaultPrices: { "Costco": 14.99, "Trader Joe's": 5.99, "HEB": 6.48, "H-Mart": 5.99, "Kroger": 6.99, "default": 6.49 }, unit: "pk" },
+    "햇반": { en: "Cooked White Rice Box", cat: "식료품", defaultPrices: { "Costco": 13.99, "Trader Joe's": 4.99, "HEB": 12.99, "H-Mart": 11.99, "Kroger": 13.49, "default": 12.99 }, unit: "box" },
+    "생수": { en: "Spring Water 40-Pack", cat: "식료품", defaultPrices: { "Costco": 4.99, "Trader Joe's": 3.99, "HEB": 4.38, "H-Mart": 5.99, "Kroger": 4.99, "default": 4.99 }, unit: "case" },
+    "스타벅스": { en: "Starbucks Whole Bean", cat: "식료품", defaultPrices: { "Costco": 19.99, "Trader Joe's": 9.99, "HEB": 8.98, "H-Mart": 10.99, "Kroger": 9.49, "default": 9.99 }, unit: "bag" },
+    "타이레놀": { en: "Tylenol Extra Strength", cat: "생활용품", defaultPrices: { "Costco": 16.99, "Trader Joe's": 8.99, "HEB": 11.48, "H-Mart": 12.99, "Kroger": 11.99, "default": 11.99 }, unit: "btl" },
+    "휴지": { en: "Bath Tissue (Charmin/Kirkland)", cat: "생활용품", defaultPrices: { "Costco": 23.99, "Trader Joe's": 6.99, "HEB": 15.48, "H-Mart": 17.99, "Kroger": 16.99, "default": 18.99 }, unit: "pack" }
+  };
+
+  function matchStoreProduct(inputName, storeName) {
+    const clean = inputName.trim().toLowerCase();
+    for (let key in ITEM_DICTIONARY) {
+      if (clean.includes(key) || key.includes(clean)) {
+        const itemInfo = ITEM_DICTIONARY[key];
+        const storeKey = storeName || "default";
+        const price = itemInfo.defaultPrices[storeKey] || itemInfo.defaultPrices["default"] || 5.00;
+        return {
+          matchedEn: itemInfo.en,
+          suggestedCat: itemInfo.cat,
+          price: price,
+          unit: itemInfo.unit || "ea"
+        };
+      }
+    }
+    // 사전에 없는 경우 기본 추정치
+    return {
+      matchedEn: "",
+      suggestedCat: "기타",
+      price: 4.50,
+      unit: "ea"
+    };
+  }
+
+  const STORES = ["ALL", "Costco", "HEB", "Trader Joe's", "H-Mart", "Kroger", "기타", "상관없음"];
   let selectedStoreFilter = "ALL";
 
   let members = [];
@@ -573,105 +662,18 @@
 
   function getItemEmoji(name, cat) {
     const text = name.toLowerCase();
-
-    // 1. 의약품 / 건강
-    if (text.includes("타이레놀") || text.includes("tylenol") || text.includes("애드빌") || text.includes("advil") || 
-        text.includes("모트린") || text.includes("motrin") || text.includes("알레그라") || text.includes("지르텍") || 
-        text.includes("감기약") || text.includes("해열제") || text.includes("진통제") || text.includes("소화제") || 
-        text.includes("비타민") || text.includes("vitamin") || text.includes("유산균") || text.includes("오메가") || 
-        text.includes("영양제") || text.includes("약")) return "💊";
-    if (text.includes("밴드") || text.includes("bandaid") || text.includes("반창고") || text.includes("후시딘") || 
-        text.includes("마데카솔") || text.includes("연고") || text.includes("파스")) return "🩹";
-
-    // 2. 커피 / 차 / 음료
-    if (text.includes("스타벅스") || text.includes("starbucks") || text.includes("커피") || text.includes("coffee") || 
-        text.includes("라떼") || text.includes("네스프레소") || text.includes("원두") || text.includes("맥심") || text.includes("카누")) return "☕";
-    if (text.includes("콜라") || text.includes("coke") || text.includes("coca") || text.includes("사이다") || 
-        text.includes("스프라이트") || text.includes("sprite") || text.includes("펩시") || text.includes("pepsi") || 
-        text.includes("탄산") || text.includes("소다") || text.includes("환타")) return "🥤";
-    if (text.includes("주스") || text.includes("juice") || text.includes("오렌지주스") || text.includes("사과주스")) return "🧃";
-    if (text.includes("맥주") || text.includes("beer") || text.includes("하이네켄") || text.includes("코로나") || text.includes("아사히") || text.includes("카스")) return "🍺";
-    if (text.includes("와인") || text.includes("wine") || text.includes("샤도네이") || text.includes("까베르네")) return "🍷";
-    if (text.includes("위스키") || text.includes("whisky") || text.includes("whiskey") || text.includes("소주") || text.includes("사케")) return "🥃";
-    if (text.includes("생수") || text.includes("water") || text.includes("삼다수") || text.includes("에비앙") || text.includes("탄산수") || text.includes("페리에")) return "💧";
-
-    // 3. 라면 / 면 / 쌀 / 간편식
-    if (text.includes("신라면") || text.includes("진라면") || text.includes("불닭") || text.includes("너구리") || 
-        text.includes("짜파게티") || text.includes("안성탕면") || text.includes("비빔면") || text.includes("라면") || 
-        text.includes("ramen") || text.includes("noodle") || text.includes("국수") || text.includes("파스타") || 
-        text.includes("우동") || text.includes("스파게티")) return "🍜";
-    if (text.includes("햇반") || text.includes("오뚜기밥") || text.includes("쌀") || text.includes("rice") || text.includes("현미") || text.includes("즉석밥")) return "🍚";
-
-    // 4. 과자 / 시리얼 / 디저트
-    if (text.includes("오레오") || text.includes("oreo") || text.includes("프링글스") || text.includes("pringles") || 
-        text.includes("도리토스") || text.includes("doritos") || text.includes("감자칩") || text.includes("칩") || 
-        text.includes("과자") || text.includes("쿠키") || text.includes("cookie") || text.includes("스낵")) return "🍪";
-    if (text.includes("초콜릿") || text.includes("chocolate") || text.includes("엠앤엔") || text.includes("킷캣") || text.includes("페레로") || text.includes("고디바")) return "🍫";
-    if (text.includes("하겐다즈") || text.includes("아이스크림") || text.includes("ice cream") || text.includes("빙수")) return "🍦";
-    if (text.includes("시리얼") || text.includes("cereal") || text.includes("그래놀라") || text.includes("콘푸로스트") || text.includes("켈로그") || text.includes("요거트") || text.includes("yogurt")) return "🥣";
-
-    // 5. 가공육 / 소스
-    if (text.includes("스팸") || text.includes("spam") || text.includes("소세지") || text.includes("소시지") || text.includes("sausage") || text.includes("비엔나") || text.includes("핫도그")) return "🌭";
-    if (text.includes("케첩") || text.includes("ketchup") || text.includes("하인즈") || text.includes("마요네즈") || text.includes("mayo") || text.includes("머스타드") || text.includes("잼") || text.includes("꿀") || text.includes("nutella") || text.includes("누텔라")) return "🍯";
-    if (text.includes("올리브유") || text.includes("참기름") || text.includes("식용유") || text.includes("들기름") || text.includes("오일") || text.includes("oil")) return "🫒";
-
-    // 6. 과일
+    if (text.includes("귤") || text.includes("mandarin") || text.includes("오렌지")) return "🍊";
     if (text.includes("사과") || text.includes("apple")) return "🍎";
-    if (text.includes("바나나") || text.includes("banana")) return "🍌";
-    if (text.includes("딸기") || text.includes("strawberry")) return "🍓";
-    if (text.includes("포도") || text.includes("grape")) return "🍇";
-    if (text.includes("수박") || text.includes("watermelon")) return "🍉";
-    if (text.includes("오렌지") || text.includes("귤") || text.includes("orange")) return "🍊";
-    if (text.includes("레몬") || text.includes("lemon")) return "🍋";
-    if (text.includes("복숭아") || text.includes("peach")) return "🍑";
-    if (text.includes("체리") || text.includes("cherry")) return "🍒";
-    if (text.includes("블루베리") || text.includes("berry")) return "🫐";
-    if (text.includes("키위") || text.includes("kiwi")) return "🥝";
-    if (text.includes("파인애플") || text.includes("pineapple")) return "🍍";
-    if (text.includes("망고") || text.includes("mango")) return "🥭";
-    if (text.includes("아보카도") || text.includes("avocado")) return "🥑";
-
-    // 7. 채소
-    if (text.includes("토마토") || text.includes("tomato")) return "🍅";
-    if (text.includes("오이") || text.includes("cucumber")) return "🥒";
-    if (text.includes("당근") || text.includes("carrot")) return "🥕";
-    if (text.includes("양파") || text.includes("onion")) return "🧅";
-    if (text.includes("마늘") || text.includes("garlic")) return "🧄";
-    if (text.includes("버섯") || text.includes("mushroom")) return "🍄";
-    if (text.includes("감자") || text.includes("potato")) return "🥔";
-    if (text.includes("고구마")) return "🍠";
-    if (text.includes("옥수수") || text.includes("corn")) return "🌽";
-    if (text.includes("브로콜리") || text.includes("broccoli")) return "🥦";
-    if (text.includes("고추") || text.includes("pepper")) return "🌶️";
-    if (text.includes("파") || text.includes("상추") || text.includes("샐러드") || text.includes("배추") || text.includes("시금치") || text.includes("깻잎")) return "🥬";
-
-    // 8. 정육 / 수산
-    if (text.includes("소고기") || text.includes("비프") || text.includes("스테이크") || text.includes("beef") || text.includes("steak") || text.includes("갈비") || text.includes("불고기") || text.includes("고기")) return "🥩";
-    if (text.includes("돼지") || text.includes("삼겹살") || text.includes("베이컨") || text.includes("목살") || text.includes("pork") || text.includes("bacon")) return "🥓";
-    if (text.includes("닭") || text.includes("치킨") || text.includes("닭가슴살") || text.includes("chicken")) return "🍗";
-    if (text.includes("생선") || text.includes("연어") || text.includes("고등어") || text.includes("참치") || text.includes("갈치") || text.includes("fish") || text.includes("salmon")) return "🐟";
-    if (text.includes("새우") || text.includes("shrimp")) return "🍤";
-    if (text.includes("게") || text.includes("크랩") || text.includes("crab") || text.includes("꽃게")) return "🦀";
-    if (text.includes("오징어") || text.includes("문어") || text.includes("낙지")) return "🐙";
-    if (text.includes("조개") || text.includes("굴") || text.includes("홍합")) return "🦪";
-
-    // 9. 유제품 / 베이커리
-    if (text.includes("우유") || text.includes("milk") || text.includes("두유")) return "🥛";
-    if (text.includes("치즈") || text.includes("cheese")) return "🧀";
-    if (text.includes("달걀") || text.includes("계란") || text.includes("egg")) return "🥚";
-    if (text.includes("버터") || text.includes("butter")) return "🧈";
-    if (text.includes("식빵") || text.includes("베이글") || text.includes("bread") || text.includes("빵") || text.includes("크루아상")) return "🍞";
-
-    // 10. 생활용품 / 위생
-    if (text.includes("휴지") || text.includes("화장지") || text.includes("키친타올") || text.includes("물티슈") || 
-        text.includes("크리넥스") || text.includes("bounty") || text.includes("charmin") || text.includes("종이컵") || text.includes("봉투")) return "🧻";
-    if (text.includes("다우니") || text.includes("타이드") || text.includes("세제") || text.includes("tide") || 
-        text.includes("downy") || text.includes("퐁퐁") || text.includes("주방세제") || text.includes("비누") || text.includes("soap")) return "🧼";
-    if (text.includes("샴푸") || text.includes("린스") || text.includes("바디워시") || text.includes("로션") || 
-        text.includes("페브리즈") || text.includes("헤드앤숄더") || text.includes("도브")) return "🧴";
-    if (text.includes("치약") || text.includes("칫솔") || text.includes("colgate") || text.includes("페리오") || text.includes("리스테린")) return "🪥";
-    if (text.includes("지퍼백") || text.includes("크린랩") || text.includes("호일") || text.includes("ziploc") || text.includes("호일")) return "📦";
-
+    if (text.includes("바나나")) return "🍌";
+    if (text.includes("삼겹살") || text.includes("pork") || text.includes("고기")) return "🥓";
+    if (text.includes("소고기") || text.includes("beef") || text.includes("스테이크")) return "🥩";
+    if (text.includes("연어") || text.includes("생선") || text.includes("fish")) return "🐟";
+    if (text.includes("계란") || text.includes("달걀") || text.includes("egg")) return "🥚";
+    if (text.includes("우유") || text.includes("milk")) return "🥛";
+    if (text.includes("라면") || text.includes("ramen")) return "🍜";
+    if (text.includes("타이레놀") || text.includes("약")) return "💊";
+    if (text.includes("휴지") || text.includes("tissue")) return "🧻";
+    if (text.includes("커피") || text.includes("스타벅스")) return "☕";
     return categoryIcons[cat] || "🛒";
   }
 
@@ -757,15 +759,12 @@
     e.stopPropagation();
     if (confirm("이 구성원을 삭제하시겠습니까?")) {
       membersRef.child(key).remove();
-      if (currentUser && currentUser.key === key) {
-        currentUser = null;
-      }
+      if (currentUser && currentUser.key === key) currentUser = null;
     }
   }
 
   function onMemberCardClick(member) {
     const requiredPin = getRequiredPin(member.name);
-
     if (requiredPin) {
       targetLockedMember = member;
       const hiddenInput = document.getElementById("hiddenPinInput");
@@ -789,9 +788,7 @@
       if (val === requiredPin) {
         input.blur();
         const m = targetLockedMember;
-        setTimeout(() => {
-          enterApp(m);
-        }, 150);
+        setTimeout(() => enterApp(m), 150);
       } else {
         const d0 = document.getElementById(`dot_${key}_0`);
         const d1 = document.getElementById(`dot_${key}_1`);
@@ -811,7 +808,6 @@
     const d0 = document.getElementById(`dot_${key}_0`);
     const d1 = document.getElementById(`dot_${key}_1`);
     if (!d0 || !d1) return;
-
     d0.classList.toggle("filled", val.length >= 1);
     d1.classList.toggle("filled", val.length >= 2);
     d0.classList.remove("shake");
@@ -848,11 +844,13 @@
     return members.find(m => m.name === name) || { name: name, emoji: "👤", bg: "#7d8b82" };
   }
 
-  function addItem(customName = null, customCat = "기타", customStore = "상관없음") {
+  // 품목 추가 (자동 영문 매칭 + 단가 자동 계산 탑재)
+  function addItem(customName = null, customCat = null, customStore = null, customPrice = null) {
     let name = customName;
     let qty = "";
     let cat = customCat;
     let store = customStore;
+    let price = customPrice;
 
     if (!name) {
       const nameInput = document.getElementById("itemNameInput");
@@ -862,22 +860,29 @@
 
       name = nameInput.value.trim();
       qty = qtyInput.value.trim();
-      cat = catSelect.value;
       store = storeSelect.value;
 
       if (!name) return;
 
+      // 매칭 엔진 가동
+      const match = matchStoreProduct(name, store);
+      cat = (catSelect.value === "채소·과일" && match.suggestedCat) ? match.suggestedCat : catSelect.value;
+      price = match.price;
+
       nameInput.value = "";
       qtyInput.value = "";
-      storeSelect.value = "상관없음";
       nameInput.focus();
     }
 
+    const matchedData = matchStoreProduct(name, store);
+
     itemsRef.push({
       name: name,
+      enMatch: matchedData.matchedEn || "",
       qty: qty,
-      cat: cat,
-      store: store,
+      cat: cat || matchedData.suggestedCat,
+      store: store || "Costco",
+      price: Number(price || matchedData.price || 0),
       addedBy: currentUser ? currentUser.name : "사용자",
       completedBy: null,
       completed: false,
@@ -894,6 +899,16 @@
 
   function removeItem(key) {
     itemsRef.child(key).remove();
+  }
+
+  function editItemPrice(key, currentPrice) {
+    const newPrice = prompt("실제 마트 결제 금액(단가)을 입력하세요 ($):", currentPrice || "0.00");
+    if (newPrice !== null) {
+      const parsed = parseFloat(newPrice);
+      if (!isNaN(parsed)) {
+        itemsRef.child(key).update({ price: parsed });
+      }
+    }
   }
 
   function clearCompleted() {
@@ -917,23 +932,37 @@
     container.innerHTML = "";
 
     if (sortedNames.length === 0) {
-      container.innerHTML = `<span style="font-size: 13px; color: #a49b8f; padding: 10px 0;">완료된 품목이 쌓이면 여기에 자주 사는 품목이 나타납니다.</span>`;
+      // 기본 프리셋 노출
+      const presets = ["귤", "사과", "삼겹살", "계란", "우유"];
+      presets.forEach(pName => {
+        const info = matchStoreProduct(pName, "Costco");
+        const card = document.createElement("div");
+        card.className = "quick-card";
+        card.onclick = () => addItem(pName, info.suggestedCat, "Costco", info.price);
+        card.innerHTML = `
+          <span class="emoji">${getItemEmoji(pName, info.suggestedCat)}</span>
+          <span class="name">${pName}</span>
+          <span class="sub-est">~$${info.price.toFixed(2)}</span>
+        `;
+        container.appendChild(card);
+      });
       return;
     }
 
     sortedNames.forEach(name => {
       const match = items.find(it => it.name === name);
       const cat = match ? match.cat : "기타";
-      const store = match ? match.store : "상관없음";
+      const store = match ? match.store : "Costco";
+      const price = match ? (match.price || 0) : 0;
       const emoji = getItemEmoji(name, cat);
 
       const card = document.createElement("div");
       card.className = "quick-card";
-      card.onclick = () => addItem(name, cat, store);
+      card.onclick = () => addItem(name, cat, store, price);
       card.innerHTML = `
         <span class="emoji">${emoji}</span>
         <span class="name">${name}</span>
-        <span class="action">눌러서 추가</span>
+        <span class="sub-est">~$${price.toFixed(2)}</span>
       `;
       container.appendChild(card);
     });
@@ -965,6 +994,8 @@
     const icon = getItemEmoji(item.name, item.cat);
     const qtyDisplay = item.qty ? ` (${item.qty})` : "";
     const storeTag = (item.store && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
+    const enLabel = item.enMatch ? `<span class="item-match-en">(${item.enMatch})</span>` : "";
+    const priceDisplay = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
 
     const li = document.createElement("li");
     li.className = "item-row";
@@ -973,17 +1004,18 @@
         <div class="checkbox-box" onclick="toggleComplete('${item.key}', ${item.completed})"></div>
         <span class="item-icon">${icon}</span>
         <div class="item-text-wrap">
-          <span class="item-name-text">${item.name}${qtyDisplay}</span>
+          <span class="item-name-text">${item.name}${qtyDisplay} ${enLabel}</span>
           <div class="item-sub-tags">
             <span class="item-cat-text">${item.cat}</span>
             ${storeTag}
+            <span class="price-pill" onclick="editItemPrice('${item.key}', ${item.price || 0})" title="금액 수정">${priceDisplay} <span class="price-unit">✏️</span></span>
           </div>
         </div>
       </div>
       <div class="item-right">
         <div class="author-badge" style="background-color: ${author.bg}15; color: ${author.bg};">
           <span>${author.emoji}</span>
-          <span>${author.name} <span class="sub-act">추가</span></span>
+          <span>${author.name}</span>
         </div>
         <button class="btn-del" onclick="removeItem('${item.key}')">×</button>
       </div>
@@ -1000,6 +1032,13 @@
 
     const pendingItems = items.filter(it => !it.completed);
     const completedItems = items.filter(it => it.completed);
+
+    // 총 예상 금액 계산
+    const pendingTotalCost = pendingItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
+    const completedTotalCost = completedItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
+
+    document.getElementById("totalEstCostDisplay").textContent = `$${pendingTotalCost.toFixed(2)}`;
+    document.getElementById("completedCostDisplay").textContent = `$${completedTotalCost.toFixed(2)}`;
 
     renderStoreFilters(pendingItems);
 
@@ -1019,7 +1058,7 @@
           groups[storeName].push(it);
         });
 
-        const storeOrder = ["Costco", "Trader Joe's", "H-Mart", "HEB", "Kroger", "기타", "상관없음"];
+        const storeOrder = ["Costco", "HEB", "Trader Joe's", "H-Mart", "Kroger", "기타", "상관없음"];
         const sortedStores = Object.keys(groups).sort((a, b) => {
           let idxA = storeOrder.indexOf(a);
           let idxB = storeOrder.indexOf(b);
@@ -1032,9 +1071,11 @@
           const groupWrap = document.createElement("div");
           groupWrap.className = "store-group";
 
+          const subTotal = groups[storeName].reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+
           const titleEl = document.createElement("div");
           titleEl.className = "store-group-title";
-          titleEl.innerHTML = `🏪 <strong>${storeName}</strong> (${groups[storeName].length})`;
+          titleEl.innerHTML = `🏪 <strong>${storeName}</strong> (${groups[storeName].length}개 · 약 $${subTotal.toFixed(2)})`;
           groupWrap.appendChild(titleEl);
 
           const ul = document.createElement("ul");
@@ -1062,6 +1103,7 @@
         const buyer = getMemberInfo(item.completedBy || item.addedBy);
         const icon = getItemEmoji(item.name, item.cat);
         const storeTag = (item.store && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
+        const priceVal = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
 
         const li = document.createElement("li");
         li.className = "item-row completed-item";
@@ -1071,13 +1113,15 @@
             <span class="item-icon" style="opacity: 0.7;">${icon}</span>
             <div class="item-text-wrap">
               <span class="item-name-text">${item.name}</span>
-              <div class="item-sub-tags">${storeTag}</div>
+              <div class="item-sub-tags">
+                ${storeTag}
+                <span class="price-pill" style="opacity: 0.7;">${priceVal}</span>
+              </div>
             </div>
             <div class="author-badge" style="background-color: ${buyer.bg}15; color: ${buyer.bg};">
               <span>${buyer.emoji}</span>
-              <span>${buyer.name} <span class="sub-act">완료</span></span>
+              <span>${buyer.name} 완료</span>
             </div>
-            <span class="restore-tip">↩ 복구</span>
           </div>
           <button class="btn-del" onclick="removeItem('${item.key}')">×</button>
         `;
