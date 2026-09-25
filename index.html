@@ -129,7 +129,7 @@
       font-weight: 700; 
       cursor: pointer; 
       white-space: nowrap; 
-      font-size: 13.5px;
+      font-size: 13.5px; 
     }
 
     .members-grid { 
@@ -298,6 +298,8 @@
       text-align: center; 
       flex-shrink: 0; 
     }
+    .input-qty::placeholder { color: #b4bdb6; }
+
     .select-box { 
       flex: 1; 
       min-width: 0; 
@@ -308,7 +310,15 @@
       font-size: 13px; 
       background: #fff; 
       text-overflow: ellipsis; 
+      color: var(--text-dark);
     }
+    .select-box.placeholder-color {
+      color: #b4bdb6 !important;
+    }
+    .select-box option {
+      color: var(--text-dark);
+    }
+
     .btn-submit { 
       background: var(--primary-green); 
       color: white; 
@@ -619,8 +629,8 @@
       <div class="input-row-2">
         <input type="text" id="itemQtyInput" class="input-qty" placeholder="수량" onkeypress="if(event.key==='Enter') addItem()">
         
-<select id="itemCatSelect" class="select-box">
-          <option value="Category">Category</option>
+        <select id="itemCatSelect" class="select-box placeholder-color" onchange="this.classList.toggle('placeholder-color', !this.value)">
+          <option value="" disabled selected hidden>Category</option>
           <option value="채소·과일">채소·과일</option>
           <option value="유제품·달걀">유제품·달걀</option>
           <option value="식료품">식료품</option>
@@ -629,8 +639,8 @@
           <option value="기타">기타</option>
         </select>
 
-        <select id="itemStoreSelect" class="select-box">
-          <option value="Store">Store</option>
+        <select id="itemStoreSelect" class="select-box placeholder-color" onchange="this.classList.toggle('placeholder-color', !this.value)">
+          <option value="" disabled selected hidden>Store</option>
           <option value="Costco">Costco</option>
           <option value="HEB">HEB</option>
           <option value="Trader Joe's">Trader Joe's</option>
@@ -775,7 +785,6 @@
     };
   }
 
-  // 화면 표시 및 저장 시 괄호 안의 영문 및 잔여 텍스트를 강제로 날려주는 정제 함수
   function cleanDisplayName(rawName) {
     if (!rawName) return "";
     return rawName.replace(/\s*\([^)]*\)/g, "").trim();
@@ -800,7 +809,7 @@
     return `${yyyy}/${mm}`;
   }
 
-  const STORES = ["ALL", "Costco", "HEB", "Trader Joe's", "H-Mart", "Kroger", "기타", "상관없음"];
+  const STORES = ["ALL", "Costco", "HEB", "Trader Joe's", "H-Mart", "Kroger", "기타"];
   let selectedStoreFilter = "ALL";
 
   let members = [];
@@ -1090,22 +1099,28 @@
       name = nameInput.value.trim();
       qty = qtyInput.value.trim();
       store = storeSelect.value;
+      cat = catSelect.value;
 
       if (!name) return;
 
       const match = matchStoreProduct(name, store);
-      cat = (catSelect.value === "채소·과일" && match.suggestedCat) ? match.suggestedCat : catSelect.value;
+      cat = (cat === "Category" || !cat) ? match.suggestedCat : cat;
+      store = (store === "Store" || !store) ? "Costco" : store;
       price = match.price;
 
       nameInput.value = "";
       qtyInput.value = "";
+      catSelect.value = "";
+      storeSelect.value = "";
+      catSelect.classList.add("placeholder-color");
+      storeSelect.classList.add("placeholder-color");
       nameInput.focus();
     }
 
     const cleanedName = cleanDisplayName(name);
-    const matchedData = matchStoreProduct(cleanedName, store);
-    const resolvedStore = store || "Costco";
-    const resolvedCat = cat || matchedData.suggestedCat;
+    const resolvedStore = (store && store !== "Store") ? store : "Costco";
+    const matchedData = matchStoreProduct(cleanedName, resolvedStore);
+    const resolvedCat = (cat && cat !== "Category") ? cat : matchedData.suggestedCat;
     const resolvedPrice = Number(price !== null && price !== undefined ? price : matchedData.price);
 
     const normalizedInput = cleanedName.toLowerCase();
@@ -1294,7 +1309,7 @@
     document.getElementById("historyModalOverlay").style.display = "none";
   }
 
-  // 자주 사는 품목: 실제 완료한 항목 빈도수 기반 (영문 괄호 제거 후 렌더)
+  // 자주 사는 품목
   function renderQuickAdd() {
     const counts = {};
     items.filter(it => it.completed).forEach(it => {
@@ -1355,7 +1370,7 @@
     const author = getMemberInfo(item.addedBy);
     const icon = getItemEmoji(item.name, item.cat);
     const displayName = cleanDisplayName(item.name);
-    const storeTag = (item.store && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
+    const storeTag = (item.store && item.store !== "Store" && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
     const priceDisplay = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
     const qtyText = item.qty ? item.qty : "1";
 
@@ -1423,12 +1438,12 @@
       if (selectedStoreFilter === "ALL") {
         const groups = {};
         displayPending.forEach(it => {
-          const storeName = it.store || "상관없음";
+          const storeName = it.store || "Costco";
           if (!groups[storeName]) groups[storeName] = [];
           groups[storeName].push(it);
         });
 
-        const storeOrder = ["Costco", "HEB", "Trader Joe's", "H-Mart", "Kroger", "기타", "상관없음"];
+        const storeOrder = ["Costco", "HEB", "Trader Joe's", "H-Mart", "Kroger", "기타"];
         const sortedStores = Object.keys(groups).sort((a, b) => {
           let idxA = storeOrder.indexOf(a);
           let idxB = storeOrder.indexOf(b);
@@ -1473,7 +1488,7 @@
         const buyer = getMemberInfo(item.completedBy || item.addedBy);
         const icon = getItemEmoji(item.name, item.cat);
         const displayName = cleanDisplayName(item.name);
-        const storeTag = (item.store && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
+        const storeTag = (item.store && item.store !== "Store" && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
         const priceVal = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
         const qtyDisplay = item.qty ? ` (${item.qty})` : "";
 
