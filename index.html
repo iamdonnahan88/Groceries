@@ -619,7 +619,8 @@
       <div class="input-row-2">
         <input type="text" id="itemQtyInput" class="input-qty" placeholder="수량" onkeypress="if(event.key==='Enter') addItem()">
         
-        <select id="itemCatSelect" class="select-box">
+<select id="itemCatSelect" class="select-box">
+          <option value="Category">Category</option>
           <option value="채소·과일">채소·과일</option>
           <option value="유제품·달걀">유제품·달걀</option>
           <option value="식료품">식료품</option>
@@ -629,12 +630,12 @@
         </select>
 
         <select id="itemStoreSelect" class="select-box">
+          <option value="Store">Store</option>
           <option value="Costco">Costco</option>
           <option value="HEB">HEB</option>
           <option value="Trader Joe's">Trader Joe's</option>
           <option value="H-Mart">H-Mart</option>
           <option value="Kroger">Kroger</option>
-          <option value="상관없음">Store 선택</option>
           <option value="기타">etc.</option>
         </select>
 
@@ -756,7 +757,7 @@
     for (let key in ITEM_DICTIONARY) {
       if (clean.includes(key) || key.includes(clean)) {
         const itemInfo = ITEM_DICTIONARY[key];
-        const storeKey = storeName || "default";
+        const storeKey = (storeName && storeName !== "Store") ? storeName : "default";
         const price = itemInfo.defaultPrices[storeKey] || itemInfo.defaultPrices["default"] || 5.00;
         return {
           matchedEn: itemInfo.en,
