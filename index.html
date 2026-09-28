@@ -62,6 +62,7 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between; 
+      overflow-y: auto;
     }
 
     .select-header { 
@@ -95,6 +96,7 @@
     .select-title-box h1 { font-size: 26px; line-height: 1.32; margin-bottom: 6px; font-weight: 800; }
     .select-title-box p { color: var(--text-muted); font-size: 13.5px; }
 
+    /* 메인 화면의 멤버 입력창: 이름만 입력하도록 깔끔하게 복원 */
     .member-input-wrap { 
       display: flex; 
       gap: 6px; 
@@ -103,35 +105,94 @@
       border-radius: 12px; 
       margin-bottom: 18px; 
       width: 100%; 
-      max-width: 380px; 
+      max-width: 360px; 
       align-items: center;
     }
     .member-input-wrap input { 
       flex: 1; 
       min-width: 0; 
       border: none; 
-      padding: 10px 10px; 
+      padding: 10px 12px; 
       border-radius: 8px; 
       outline: none; 
       font-size: 13.5px; 
       background: #fff; 
     }
-    .member-input-wrap .pin-input {
-      width: 65px;
-      flex: none;
-      text-align: center;
-    }
     .btn-member-add { 
       background: var(--primary-green); 
       color: white; 
       border: none; 
-      padding: 0 13px; 
+      padding: 0 15px; 
       height: 38px; 
       border-radius: 8px; 
       font-weight: 700; 
       cursor: pointer; 
       white-space: nowrap; 
       font-size: 13.5px; 
+    }
+
+    /* Donna 관리자용 가입 승인 대기 패널 */
+    #adminRequestPanel {
+      display: none;
+      width: 100%;
+      max-width: 380px;
+      background: #fff9f0;
+      border: 1.5px dashed #d97706;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .admin-req-header {
+      font-size: 13px;
+      font-weight: 800;
+      color: #92400e;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .admin-req-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .admin-req-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #ffffff;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #fed7aa;
+    }
+    .admin-req-info {
+      font-size: 13px;
+      font-weight: 700;
+      color: #451a03;
+    }
+    .admin-req-btns {
+      display: flex;
+      gap: 6px;
+    }
+    .btn-req-approve {
+      background: var(--primary-green);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-req-reject {
+      background: #ef4444;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
     .members-grid { 
@@ -192,18 +253,7 @@
 
     .btn-member-del { position: absolute; top: 10px; right: 12px; background: none; border: none; font-size: 18px; color: #ccc; cursor: pointer; }
     .btn-member-del:hover { color: #e53e3e; }
-    .btn-approve {
-      margin-top: 6px;
-      background: #eaf1ec;
-      border: 1px solid #c5ddcd;
-      color: var(--primary-green);
-      font-size: 11.5px;
-      font-weight: 700;
-      border-radius: 8px;
-      padding: 3px 8px;
-      cursor: pointer;
-    }
-    .slogan { text-align: center; font-size: 12px; font-style: italic; color: #9c9186; width: 100%; flex-shrink: 0; }
+    .slogan { text-align: center; font-size: 12px; font-style: italic; color: #9c9186; width: 100%; flex-shrink: 0; margin-top: 14px; }
 
     #page-grocery { 
       display: none; 
@@ -483,6 +533,7 @@
     .btn-restore:hover { background: #e0ded8; }
     .empty-note { text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px 0; }
 
+    /* 모달 베이스 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -548,6 +599,44 @@
       padding: 2px 7px;
       border-radius: 6px;
     }
+
+    /* 추가 버튼 누른 후 나타나는 PIN & Request 전용 모달 */
+    .req-pin-box {
+      text-align: center;
+      padding: 10px 0 6px;
+    }
+    .req-pin-box p {
+      font-size: 14px;
+      color: var(--text-dark);
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+    .req-pin-input {
+      width: 130px;
+      height: 44px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 8px;
+      border: 2px solid var(--border-soft);
+      border-radius: 12px;
+      outline: none;
+      margin-bottom: 18px;
+    }
+    .btn-req-submit {
+      width: 100%;
+      background: var(--primary-green);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-req-submit:hover {
+      background: var(--primary-green-hover);
+    }
   </style>
 </head>
 <body>
@@ -568,10 +657,18 @@
         <p>가족 이름을 추가하세요🤍</p>
       </div>
 
+      <!-- 이름만 깔끔하게 입력하는 인풋창 -->
       <div class="member-input-wrap">
-        <input type="text" id="newMemberInput" placeholder="이름 (예: Donna, Sia, Sian)">
-        <input type="password" id="newMemberPin" class="pin-input" placeholder="PIN(2자리)" maxlength="2" inputmode="numeric">
-        <button type="button" class="btn-member-add" onclick="addMember()">추가</button>
+        <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: Donna, Sia, Sian)" onkeypress="if(event.key==='Enter') startMemberAdd()">
+        <button type="button" class="btn-member-add" onclick="startMemberAdd()">추가</button>
+      </div>
+
+      <!-- Donna 로그인 시 나타나는 가입 요청 승인(Approve) / 거절(Reject) 패널 -->
+      <div id="adminRequestPanel">
+        <div class="admin-req-header">
+          <span>🔔 새 가족 구성원 가입 요청 (<span id="adminReqCount">0</span>)</span>
+        </div>
+        <div id="adminReqList" class="admin-req-list"></div>
       </div>
 
       <div id="membersContainer" class="members-grid"></div>
@@ -598,7 +695,7 @@
       </div>
     </div>
 
-    <!-- 총 금액 카드 -->
+    <!-- 총 금액 & 이번 달 지출 요약 카드 -->
     <div class="cost-summary-card">
       <div class="cost-main-row">
         <div class="cost-info-left">
@@ -700,6 +797,22 @@
     </div>
   </div>
 
+  <!-- [추가] 버튼 클릭 시 열리는 PIN 번호 입력 및 Request 모달 -->
+  <div id="pinRequestModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 330px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="pinModalTitle">PIN 번호 설정</h3>
+        <button type="button" class="modal-close" onclick="closePinModal()">&times;</button>
+      </div>
+      <div class="modal-body req-pin-box">
+        <p><strong id="pinModalName" style="color:var(--primary-green)"></strong> 님이 사용할<br><strong>2자리 숫자 PIN</strong>을 입력하세요.</p>
+        <input type="password" id="reqPinInput" class="req-pin-input" maxlength="2" inputmode="numeric" placeholder="••" onkeypress="if(event.key==='Enter') submitMemberRequest()">
+        <button type="button" class="btn-req-submit" onclick="submitMemberRequest()">Request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 월별 지출 내역 모달 -->
   <div id="historyModalOverlay" class="modal-overlay" onclick="closeHistoryModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -812,6 +925,8 @@
   let currentMonthOverride = null;
   let currentUser = null;
   let targetLockedMember = null;
+  let pendingNewMemberName = "";
+  let isDonnaAdminActive = false;
 
   const categoryIcons = {
     "채소·과일": "🥬",
@@ -883,7 +998,35 @@
 
   function renderMembers() {
     const container = document.getElementById("membersContainer");
+    const adminPanel = document.getElementById("adminRequestPanel");
+    const adminList = document.getElementById("adminReqList");
+    const adminCount = document.getElementById("adminReqCount");
+
     container.innerHTML = "";
+    adminList.innerHTML = "";
+
+    const pendingRequests = members.filter(m => m.approved === false);
+    const approvedMembers = members.filter(m => m.approved !== false);
+
+    // Donna로 로그인한 적이 있을 때만 승인/거절 패널 노출
+    if (isDonnaAdminActive && pendingRequests.length > 0) {
+      adminPanel.style.display = "block";
+      adminCount.textContent = pendingRequests.length;
+      pendingRequests.forEach(req => {
+        const item = document.createElement("div");
+        item.className = "admin-req-item";
+        item.innerHTML = `
+          <div class="admin-req-info">👤 ${req.name} <span style="font-size:11px; opacity:0.7;">(요청됨)</span></div>
+          <div class="admin-req-btns">
+            <button type="button" class="btn-req-approve" onclick="approveRequest('${req.key}')">Approve</button>
+            <button type="button" class="btn-req-reject" onclick="rejectRequest('${req.key}')">Reject</button>
+          </div>
+        `;
+        adminList.appendChild(item);
+      });
+    } else {
+      adminPanel.style.display = "none";
+    }
 
     if (members.length === 0) {
       container.innerHTML = `
@@ -894,8 +1037,6 @@
       document.getElementById("appFamilyMembers").textContent = "가족 목록";
       return;
     }
-
-    const isDonnaLoggedIn = currentUser && isDonna(currentUser.name);
 
     members.forEach(member => {
       const isApproved = member.approved !== false;
@@ -912,12 +1053,7 @@
       `;
 
       if (!isApproved) {
-        subHtml = `<span style="color:#d97706; font-weight:700;">승인 대기 중</span>`;
-      }
-
-      let approveBtn = "";
-      if (!isApproved && isDonnaLoggedIn) {
-        approveBtn = `<button class="btn-approve" onclick="approveMember(event, '${member.key}')">승인하기</button>`;
+        subHtml = `<span style="color:#d97706; font-weight:700;">승인 대기 중 ⏳</span>`;
       }
 
       card.innerHTML = `
@@ -927,26 +1063,40 @@
         </div>
         <div class="user-card-name">${member.name}</div>
         <div class="user-card-sub">${subHtml}</div>
-        ${approveBtn}
       `;
       container.appendChild(card);
     });
 
-    document.getElementById("appFamilyMembers").textContent = members.filter(m => m.approved !== false).map(m => m.name).join(" + ");
+    document.getElementById("appFamilyMembers").textContent = approvedMembers.map(m => m.name).join(" + ");
   }
 
-  function addMember() {
-    const nameInput = document.getElementById("newMemberInput");
-    const pinInput = document.getElementById("newMemberPin");
-    const name = nameInput.value.trim();
-    const pin = pinInput.value.trim();
-
+  // 1. 이름 넣고 '추가' 버튼 클릭 -> PIN 입력 팝업 띄움
+  function startMemberAdd() {
+    const input = document.getElementById("newMemberInput");
+    const name = input.value.trim();
     if (!name) return;
+
+    pendingNewMemberName = name;
+    document.getElementById("pinModalName").textContent = name;
+    document.getElementById("reqPinInput").value = "";
+    document.getElementById("pinRequestModal").style.display = "flex";
+    document.getElementById("reqPinInput").focus();
+  }
+
+  function closePinModal() {
+    document.getElementById("pinRequestModal").style.display = "none";
+    pendingNewMemberName = "";
+  }
+
+  // 2. 팝업에서 2자리 PIN 넣고 'Request' 버튼 클릭 시 전송
+  function submitMemberRequest() {
+    const pin = document.getElementById("reqPinInput").value.trim();
     if (pin.length !== 2 || isNaN(pin)) {
-      alert("PIN 비밀번호 2자리 숫자를 입력해 주세요.");
+      alert("PIN 번호는 2자리 숫자로 입력해야 합니다.");
       return;
     }
 
+    const name = pendingNewMemberName;
     const style = avatarPool[members.length % avatarPool.length];
     const isFirstDonna = isDonna(name);
 
@@ -959,17 +1109,26 @@
       createdAt: Date.now()
     });
 
-    nameInput.value = "";
-    pinInput.value = "";
-    if (!isFirstDonna) {
-      alert(`[${name}] 구성원 등록 요청이 전송되었습니다. Donna가 승인하면 목록을 이용할 수 있습니다.`);
+    document.getElementById("newMemberInput").value = "";
+    closePinModal();
+
+    if (isFirstDonna) {
+      alert(`Donna 관리자 계정이 추가되었습니다.`);
+    } else {
+      alert(`[${name}] 님의 가족 구성원 가입 요청(PIN 설정)이 전송되었습니다.\nDonna가 Approve해 주면 목록을 이용할 수 있습니다.`);
     }
   }
 
-  function approveMember(e, key) {
-    e.stopPropagation();
+  // Donna의 Approve / Reject 액션
+  function approveRequest(key) {
     membersRef.child(key).update({ approved: true });
-    alert("승인이 완료되었습니다.");
+    alert("승인되었습니다. 이제 해당 멤버가 접속할 수 있습니다.");
+  }
+
+  function rejectRequest(key) {
+    if (confirm("이 가입 요청을 거절(삭제)하시겠습니까?")) {
+      membersRef.child(key).remove();
+    }
   }
 
   function deleteMember(e, key) {
@@ -982,7 +1141,7 @@
 
   function onMemberCardClick(member) {
     if (member.approved === false) {
-      alert("아직 Donna의 승인이 완료되지 않았습니다.");
+      alert("Donna의 승인을 기다리는 중입니다. Donna가 Approve한 후 접속할 수 있습니다.");
       return;
     }
     targetLockedMember = member;
@@ -1004,6 +1163,9 @@
       if (val === requiredPin) {
         input.blur();
         const m = targetLockedMember;
+        if (isDonna(m.name)) {
+          isDonnaAdminActive = true;
+        }
         setTimeout(() => enterApp(m), 150);
       } else {
         const d0 = document.getElementById(`dot_${key}_0`);
