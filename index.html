@@ -96,7 +96,6 @@
     .select-title-box h1 { font-size: 26px; line-height: 1.32; margin-bottom: 6px; font-weight: 800; }
     .select-title-box p { color: var(--text-muted); font-size: 13.5px; }
 
-    /* 메인 화면의 멤버 입력창: 이름만 입력하도록 깔끔하게 복원 */
     .member-input-wrap { 
       display: flex; 
       gap: 6px; 
@@ -129,70 +128,6 @@
       cursor: pointer; 
       white-space: nowrap; 
       font-size: 13.5px; 
-    }
-
-    /* Donna 관리자용 가입 승인 대기 패널 */
-    #adminRequestPanel {
-      display: none;
-      width: 100%;
-      max-width: 380px;
-      background: #fff9f0;
-      border: 1.5px dashed #d97706;
-      border-radius: 16px;
-      padding: 12px 14px;
-      margin-bottom: 16px;
-    }
-    .admin-req-header {
-      font-size: 13px;
-      font-weight: 800;
-      color: #92400e;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .admin-req-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .admin-req-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #ffffff;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid #fed7aa;
-    }
-    .admin-req-info {
-      font-size: 13px;
-      font-weight: 700;
-      color: #451a03;
-    }
-    .admin-req-btns {
-      display: flex;
-      gap: 6px;
-    }
-    .btn-req-approve {
-      background: var(--primary-green);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 4px 9px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .btn-req-reject {
-      background: #ef4444;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 4px 9px;
-      font-size: 11.5px;
-      font-weight: 700;
-      cursor: pointer;
     }
 
     .members-grid { 
@@ -533,7 +468,7 @@
     .btn-restore:hover { background: #e0ded8; }
     .empty-note { text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px 0; }
 
-    /* 모달 베이스 */
+    /* 모달 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -600,7 +535,7 @@
       border-radius: 6px;
     }
 
-    /* 추가 버튼 누른 후 나타나는 PIN & Request 전용 모달 */
+    /* PIN 설정 팝업 모달 */
     .req-pin-box {
       text-align: center;
       padding: 10px 0 6px;
@@ -637,6 +572,47 @@
     .btn-req-submit:hover {
       background: var(--primary-green-hover);
     }
+
+    /* Donna 전용 가입 승인 모달 */
+    .donna-req-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #faf7f2;
+      border: 1px solid #ebdccb;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+    .donna-req-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: #375b42;
+    }
+    .donna-req-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .btn-approve {
+      background: var(--primary-green);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-reject {
+      background: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -657,18 +633,9 @@
         <p>가족 이름을 추가하세요🤍</p>
       </div>
 
-      <!-- 이름만 깔끔하게 입력하는 인풋창 -->
       <div class="member-input-wrap">
         <input type="text" id="newMemberInput" placeholder="이름을 입력하세요 (예: Donna, Sia, Sian)" onkeypress="if(event.key==='Enter') startMemberAdd()">
         <button type="button" class="btn-member-add" onclick="startMemberAdd()">추가</button>
-      </div>
-
-      <!-- Donna 로그인 시 나타나는 가입 요청 승인(Approve) / 거절(Reject) 패널 -->
-      <div id="adminRequestPanel">
-        <div class="admin-req-header">
-          <span>🔔 새 가족 구성원 가입 요청 (<span id="adminReqCount">0</span>)</span>
-        </div>
-        <div id="adminReqList" class="admin-req-list"></div>
       </div>
 
       <div id="membersContainer" class="members-grid"></div>
@@ -695,7 +662,7 @@
       </div>
     </div>
 
-    <!-- 총 금액 & 이번 달 지출 요약 카드 -->
+    <!-- 총 금액 카드 -->
     <div class="cost-summary-card">
       <div class="cost-main-row">
         <div class="cost-info-left">
@@ -797,7 +764,7 @@
     </div>
   </div>
 
-  <!-- [추가] 버튼 클릭 시 열리는 PIN 번호 입력 및 Request 모달 -->
+  <!-- PIN 번호 입력 및 Request 모달 -->
   <div id="pinRequestModal" class="modal-overlay">
     <div class="modal-content" style="max-width: 330px;" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -812,7 +779,22 @@
     </div>
   </div>
 
-  <!-- 월별 지출 내역 모달 -->
+  <!-- Donna 전용 승인 / 거절 팝업 모달 -->
+  <div id="donnaApprovalModal" class="modal-overlay">
+    <div class="modal-content" style="max-width: 380px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>🔔 새 가족 승인 요청</h3>
+        <button type="button" class="modal-close" onclick="closeDonnaApprovalModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 16px;">
+        <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 14px;">가족 구성원 가입 요청 목록입니다.</p>
+        <div id="donnaReqList"></div>
+        <button type="button" class="btn-req-submit" style="margin-top: 10px;" onclick="closeDonnaApprovalModal()">장보기 목록으로 가기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 지출 내역 모달 -->
   <div id="historyModalOverlay" class="modal-overlay" onclick="closeHistoryModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -926,7 +908,6 @@
   let currentUser = null;
   let targetLockedMember = null;
   let pendingNewMemberName = "";
-  let isDonnaAdminActive = false;
 
   const categoryIcons = {
     "채소·과일": "🥬",
@@ -998,35 +979,9 @@
 
   function renderMembers() {
     const container = document.getElementById("membersContainer");
-    const adminPanel = document.getElementById("adminRequestPanel");
-    const adminList = document.getElementById("adminReqList");
-    const adminCount = document.getElementById("adminReqCount");
-
     container.innerHTML = "";
-    adminList.innerHTML = "";
 
-    const pendingRequests = members.filter(m => m.approved === false);
     const approvedMembers = members.filter(m => m.approved !== false);
-
-    // Donna로 로그인한 적이 있을 때만 승인/거절 패널 노출
-    if (isDonnaAdminActive && pendingRequests.length > 0) {
-      adminPanel.style.display = "block";
-      adminCount.textContent = pendingRequests.length;
-      pendingRequests.forEach(req => {
-        const item = document.createElement("div");
-        item.className = "admin-req-item";
-        item.innerHTML = `
-          <div class="admin-req-info">👤 ${req.name} <span style="font-size:11px; opacity:0.7;">(요청됨)</span></div>
-          <div class="admin-req-btns">
-            <button type="button" class="btn-req-approve" onclick="approveRequest('${req.key}')">Approve</button>
-            <button type="button" class="btn-req-reject" onclick="rejectRequest('${req.key}')">Reject</button>
-          </div>
-        `;
-        adminList.appendChild(item);
-      });
-    } else {
-      adminPanel.style.display = "none";
-    }
 
     if (members.length === 0) {
       container.innerHTML = `
@@ -1070,7 +1025,7 @@
     document.getElementById("appFamilyMembers").textContent = approvedMembers.map(m => m.name).join(" + ");
   }
 
-  // 1. 이름 넣고 '추가' 버튼 클릭 -> PIN 입력 팝업 띄움
+  // 1. 이름 입력 후 [추가] 클릭 시 PIN 설정 팝업 호출
   function startMemberAdd() {
     const input = document.getElementById("newMemberInput");
     const name = input.value.trim();
@@ -1088,7 +1043,7 @@
     pendingNewMemberName = "";
   }
 
-  // 2. 팝업에서 2자리 PIN 넣고 'Request' 버튼 클릭 시 전송
+  // 2. PIN 2자리 입력 후 Request 전송
   function submitMemberRequest() {
     const pin = document.getElementById("reqPinInput").value.trim();
     if (pin.length !== 2 || isNaN(pin)) {
@@ -1115,19 +1070,68 @@
     if (isFirstDonna) {
       alert(`Donna 관리자 계정이 추가되었습니다.`);
     } else {
-      alert(`[${name}] 님의 가족 구성원 가입 요청(PIN 설정)이 전송되었습니다.\nDonna가 Approve해 주면 목록을 이용할 수 있습니다.`);
+      alert(`[${name}] 님의 가족 구성원 가입 요청(PIN 설정)이 전송되었습니다.\nDonna가 로그인 후 Approve해야 접속할 수 있습니다.`);
     }
   }
 
-  // Donna의 Approve / Reject 액션
-  function approveRequest(key) {
-    membersRef.child(key).update({ approved: true });
-    alert("승인되었습니다. 이제 해당 멤버가 접속할 수 있습니다.");
+  // Donna 승인/거절 모달 관련 로직
+  function checkDonnaPendingApprovals(member) {
+    const pendingList = members.filter(m => m.approved === false);
+    if (pendingList.length > 0) {
+      renderDonnaApprovalList(pendingList);
+      document.getElementById("donnaApprovalModal").style.display = "flex";
+    } else {
+      enterApp(member);
+    }
   }
 
-  function rejectRequest(key) {
+  function renderDonnaApprovalList(list) {
+    const container = document.getElementById("donnaReqList");
+    container.innerHTML = "";
+    list.forEach(req => {
+      const item = document.createElement("div");
+      item.className = "donna-req-item";
+      item.innerHTML = `
+        <div class="donna-req-name">👤 ${req.name}</div>
+        <div class="donna-req-actions">
+          <button type="button" class="btn-approve" onclick="approveMember('${req.key}')">Approve</button>
+          <button type="button" class="btn-reject" onclick="rejectMember('${req.key}')">Reject</button>
+        </div>
+      `;
+      container.appendChild(item);
+    });
+  }
+
+  function approveMember(key) {
+    membersRef.child(key).update({ approved: true });
+    setTimeout(() => {
+      const remaining = members.filter(m => m.approved === false && m.key !== key);
+      if (remaining.length > 0) {
+        renderDonnaApprovalList(remaining);
+      } else {
+        closeDonnaApprovalModal();
+      }
+    }, 100);
+  }
+
+  function rejectMember(key) {
     if (confirm("이 가입 요청을 거절(삭제)하시겠습니까?")) {
       membersRef.child(key).remove();
+      setTimeout(() => {
+        const remaining = members.filter(m => m.approved === false && m.key !== key);
+        if (remaining.length > 0) {
+          renderDonnaApprovalList(remaining);
+        } else {
+          closeDonnaApprovalModal();
+        }
+      }, 100);
+    }
+  }
+
+  function closeDonnaApprovalModal() {
+    document.getElementById("donnaApprovalModal").style.display = "none";
+    if (currentUser) {
+      enterApp(currentUser);
     }
   }
 
@@ -1163,10 +1167,13 @@
       if (val === requiredPin) {
         input.blur();
         const m = targetLockedMember;
+        currentUser = m;
+        // Donna가 비번을 입력하여 로그인 성공 시 바로 승인/거절 모달 팝업
         if (isDonna(m.name)) {
-          isDonnaAdminActive = true;
+          setTimeout(() => checkDonnaPendingApprovals(m), 150);
+        } else {
+          setTimeout(() => enterApp(m), 150);
         }
-        setTimeout(() => enterApp(m), 150);
       } else {
         const d0 = document.getElementById(`dot_${key}_0`);
         const d1 = document.getElementById(`dot_${key}_1`);
