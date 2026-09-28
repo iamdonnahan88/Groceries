@@ -238,6 +238,8 @@
       align-items: center; 
       gap: 4px; 
       cursor: pointer; 
+      border-bottom: 1px dashed rgba(164, 225, 184, 0.6);
+      padding-bottom: 1px;
     }
     
     .cost-btn-row {
@@ -302,17 +304,6 @@
     }
     .input-qty::placeholder { color: #b4bdb6; }
 
-    .input-custom-store {
-      display: none;
-      width: 90px;
-      padding: 9px 8px;
-      border: 1px solid #e1ded6;
-      border-radius: 10px;
-      outline: none;
-      font-size: 13px;
-      flex-shrink: 0;
-    }
-
     .select-box { 
       flex: 1; 
       min-width: 0; 
@@ -330,6 +321,34 @@
     }
     .select-box option {
       color: var(--text-dark);
+    }
+
+    /* Store 드롭다운 자리에 직접 교체되어 들어가는 래퍼 */
+    .store-input-swap-wrap {
+      flex: 1;
+      min-width: 0;
+      display: none;
+      align-items: center;
+      position: relative;
+    }
+    .store-input-swap-wrap input {
+      width: 100%;
+      padding: 9px 24px 9px 8px;
+      border: 1px solid #e1ded6;
+      border-radius: 10px;
+      outline: none;
+      font-size: 13px;
+      background: #fff;
+      color: var(--text-dark);
+    }
+    .btn-reset-store {
+      position: absolute;
+      right: 6px;
+      background: none;
+      border: none;
+      font-size: 12px;
+      color: #999;
+      cursor: pointer;
     }
 
     .btn-submit { 
@@ -468,7 +487,7 @@
     .btn-restore:hover { background: #e0ded8; }
     .empty-note { text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px 0; }
 
-    /* 모달 */
+    /* 모달 베이스 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -534,6 +553,66 @@
       padding: 2px 7px;
       border-radius: 6px;
     }
+
+    /* 날짜별 영수증 관리 모달 */
+    .receipt-add-box {
+      display: flex;
+      gap: 6px;
+      background: #f7f4ee;
+      padding: 8px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+    .receipt-add-box input[type="date"] {
+      padding: 8px;
+      border: 1px solid #e1ded6;
+      border-radius: 8px;
+      outline: none;
+      font-size: 13px;
+    }
+    .receipt-add-box input[type="number"] {
+      flex: 1;
+      min-width: 0;
+      padding: 8px;
+      border: 1px solid #e1ded6;
+      border-radius: 8px;
+      outline: none;
+      font-size: 13px;
+    }
+    .btn-receipt-add {
+      background: var(--primary-green);
+      color: white;
+      border: none;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .receipt-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #faf7f2;
+      border: 1px solid #ebdccb;
+      padding: 10px 14px;
+      border-radius: 12px;
+    }
+    .receipt-row-date { font-size: 14px; font-weight: 700; color: #453728; }
+    .receipt-row-amount { font-size: 15px; font-weight: 800; color: var(--accent-price); display: flex; align-items: center; gap: 8px; }
+    .btn-receipt-action {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      color: #999;
+    }
+    .btn-receipt-action:hover { color: #d9534f; }
 
     /* PIN 설정 팝업 모달 */
     .req-pin-box {
@@ -672,7 +751,7 @@
         <div class="cost-info-right">
           <div class="done-amount">
             <span>이번 달 구매한 금액</span>
-            <strong id="monthCompletedCostDisplay" onclick="updateMonthSpentDirect()" title="영수증 금액으로 직접 수정">$0.00 ✏️</strong>
+            <strong id="monthCompletedCostDisplay" onclick="openReceiptModal()" title="날짜별 지출 내역 수정 및 누적">$0.00 ✏️</strong>
           </div>
         </div>
       </div>
@@ -718,6 +797,7 @@
           <option value="기타">기타</option>
         </select>
 
+        <!-- Store 드롭다운 -->
         <select id="itemStoreSelect" class="select-box placeholder-color" onchange="onStoreSelectChange(this)">
           <option value="" disabled selected hidden>Store</option>
           <option value="Costco">Costco</option>
@@ -725,10 +805,14 @@
           <option value="Trader Joe's">Trader Joe's</option>
           <option value="H-Mart">H-Mart</option>
           <option value="Kroger">Kroger</option>
-          <option value="기타">etc. (직접입력)</option>
+          <option value="etc.">etc.</option>
         </select>
 
-        <input type="text" id="customStoreInput" class="input-custom-store" placeholder="매장명 직접입력">
+        <!-- etc. 선택 시 같은 자리에 바로 뜨는 매장명 직접입력창 -->
+        <div id="storeInputSwapWrap" class="store-input-swap-wrap">
+          <input type="text" id="customStoreInput" placeholder="매장명 직접입력" onkeypress="if(event.key==='Enter') addItem()">
+          <button type="button" class="btn-reset-store" onclick="resetStoreSelect()" title="드롭다운으로 돌아가기">↺</button>
+        </div>
 
         <button type="button" class="btn-submit" onclick="addItem()">Add List</button>
       </div>
@@ -794,7 +878,25 @@
     </div>
   </div>
 
-  <!-- 지출 내역 모달 -->
+  <!-- 날짜별 영수증 지출 관리 모달 -->
+  <div id="receiptModal" class="modal-overlay" onclick="closeReceiptModal(event)">
+    <div class="modal-content" style="max-width: 400px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>이번 달 영수증 지출 관리 🧾</h3>
+        <button type="button" class="modal-close" onclick="closeReceiptModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="receipt-add-box">
+          <input type="date" id="receiptDateInput">
+          <input type="number" id="receiptAmountInput" placeholder="금액 ($)" step="0.01">
+          <button type="button" class="btn-receipt-add" onclick="addReceiptRecord()">추가</button>
+        </div>
+        <div id="receiptListContainer" class="receipt-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 월별 지출 내역 히스토리 모달 -->
   <div id="historyModalOverlay" class="modal-overlay" onclick="closeHistoryModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
@@ -831,7 +933,7 @@
   const membersRef = db.ref("members");
   const itemsRef = db.ref("items");
   const historyRef = db.ref("monthly_history");
-  const metaRef = db.ref("monthly_meta");
+  const receiptsRef = db.ref("monthly_receipts");
 
   const ITEM_DICTIONARY = {
     "블루베리": { en: "Organic Blueberries", cat: "채소·과일", defaultPrices: { "Costco": 8.99, "Trader Joe's": 3.99, "HEB": 3.48, "H-Mart": 4.99, "Kroger": 3.99, "default": 4.49 }, unit: "pk" },
@@ -865,7 +967,7 @@
     for (let key in ITEM_DICTIONARY) {
       if (clean.includes(key) || key.includes(clean)) {
         const itemInfo = ITEM_DICTIONARY[key];
-        const storeKey = (storeName && storeName !== "Store") ? storeName : "default";
+        const storeKey = (storeName && storeName !== "Store" && storeName !== "etc.") ? storeName : "default";
         const price = itemInfo.defaultPrices[storeKey] || itemInfo.defaultPrices["default"] || 5.00;
         return {
           matchedEn: itemInfo.en,
@@ -898,13 +1000,21 @@
     return `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}`;
   }
 
+  function getTodayString() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
   const STORES = ["ALL", "Costco", "HEB", "Trader Joe's", "H-Mart", "Kroger", "기타"];
   let selectedStoreFilter = "ALL";
 
   let members = [];
   let items = [];
   let historyData = {};
-  let currentMonthOverride = null;
+  let currentMonthReceipts = {};
   let currentUser = null;
   let targetLockedMember = null;
   let pendingNewMemberName = "";
@@ -972,9 +1082,13 @@
     historyData = snapshot.val() || {};
   });
 
-  metaRef.child("overrideTotal").on("value", snapshot => {
-    currentMonthOverride = snapshot.val();
+  const ymKey = getCurrentYearMonth().replace("/", "_");
+  receiptsRef.child(ymKey).on("value", snapshot => {
+    currentMonthReceipts = snapshot.val() || {};
     renderApp();
+    if (document.getElementById("receiptModal").style.display === "flex") {
+      renderReceiptList();
+    }
   });
 
   function renderMembers() {
@@ -1025,7 +1139,6 @@
     document.getElementById("appFamilyMembers").textContent = approvedMembers.map(m => m.name).join(" + ");
   }
 
-  // 1. 이름 입력 후 [추가] 클릭 시 PIN 설정 팝업 호출
   function startMemberAdd() {
     const input = document.getElementById("newMemberInput");
     const name = input.value.trim();
@@ -1043,7 +1156,6 @@
     pendingNewMemberName = "";
   }
 
-  // 2. PIN 2자리 입력 후 Request 전송
   function submitMemberRequest() {
     const pin = document.getElementById("reqPinInput").value.trim();
     if (pin.length !== 2 || isNaN(pin)) {
@@ -1074,7 +1186,6 @@
     }
   }
 
-  // Donna 승인/거절 모달 관련 로직
   function checkDonnaPendingApprovals(member) {
     const pendingList = members.filter(m => m.approved === false);
     if (pendingList.length > 0) {
@@ -1168,7 +1279,6 @@
         input.blur();
         const m = targetLockedMember;
         currentUser = m;
-        // Donna가 비번을 입력하여 로그인 성공 시 바로 승인/거절 모달 팝업
         if (isDonna(m.name)) {
           setTimeout(() => checkDonnaPendingApprovals(m), 150);
         } else {
@@ -1229,15 +1339,26 @@
     return members.find(m => m.name === name) || { name: name, emoji: "👤", bg: "#7d8b82" };
   }
 
+  // Store에서 etc. 선택 시 같은 자리에 바로 직접입력창 노출
   function onStoreSelectChange(select) {
     select.classList.toggle('placeholder-color', !select.value);
-    const customInput = document.getElementById("customStoreInput");
-    if (select.value === "기타") {
-      customInput.style.display = "inline-block";
+    if (select.value === "etc.") {
+      select.style.display = "none";
+      const wrap = document.getElementById("storeInputSwapWrap");
+      wrap.style.display = "inline-flex";
+      const customInput = document.getElementById("customStoreInput");
+      customInput.value = "";
       customInput.focus();
-    } else {
-      customInput.style.display = "none";
     }
+  }
+
+  function resetStoreSelect() {
+    const select = document.getElementById("itemStoreSelect");
+    const wrap = document.getElementById("storeInputSwapWrap");
+    wrap.style.display = "none";
+    select.style.display = "inline-block";
+    select.value = "";
+    select.classList.add("placeholder-color");
   }
 
   function addItem(customName = null, customCat = null, customStore = null, customPrice = null) {
@@ -1257,32 +1378,30 @@
       name = nameInput.value.trim();
       qty = qtyInput.value.trim();
       cat = catSelect.value;
-      store = storeSelect.value;
 
-      if (store === "기타") {
+      if (storeSelect.style.display === "none") {
         store = customStoreInput.value.trim() || "기타";
+      } else {
+        store = storeSelect.value;
       }
 
       if (!name) return;
 
       const match = matchStoreProduct(name, store);
       cat = (cat === "Category" || !cat) ? match.suggestedCat : cat;
-      store = (store === "Store" || !store) ? "Costco" : store;
+      store = (store === "Store" || !store || store === "etc.") ? "Costco" : store;
       price = match.price;
 
       nameInput.value = "";
       qtyInput.value = "";
       catSelect.value = "";
-      storeSelect.value = "";
-      customStoreInput.value = "";
-      customStoreInput.style.display = "none";
       catSelect.classList.add("placeholder-color");
-      storeSelect.classList.add("placeholder-color");
+      resetStoreSelect();
       nameInput.focus();
     }
 
     const cleanedName = cleanDisplayName(name);
-    const resolvedStore = (store && store !== "Store") ? store : "Costco";
+    const resolvedStore = (store && store !== "Store" && store !== "etc.") ? store : "Costco";
     const matchedData = matchStoreProduct(cleanedName, resolvedStore);
     const resolvedCat = (cat && cat !== "Category") ? cat : matchedData.suggestedCat;
     const resolvedPrice = Number(price !== null && price !== undefined ? price : matchedData.price);
@@ -1365,14 +1484,85 @@
     }
   }
 
-  function updateMonthSpentDirect() {
-    const currentVal = document.getElementById("monthCompletedCostDisplay").innerText.replace(/[^0-9.]/g, "");
-    const val = prompt("영수증 실제 총 결제 금액을 입력하세요 ($):", currentVal || "0.00");
-    if (val !== null) {
-      const parsed = parseFloat(val);
-      if (!isNaN(parsed)) {
-        metaRef.child("overrideTotal").set(parsed);
+  // 날짜별 영수증 관리 모달 관련 함수
+  function openReceiptModal() {
+    document.getElementById("receiptDateInput").value = getTodayString();
+    document.getElementById("receiptAmountInput").value = "";
+    renderReceiptList();
+    document.getElementById("receiptModal").style.display = "flex";
+  }
+
+  function closeReceiptModal(e) {
+    if (e && e.target !== e.currentTarget && !e.target.classList.contains("modal-close")) return;
+    document.getElementById("receiptModal").style.display = "none";
+  }
+
+  function renderReceiptList() {
+    const container = document.getElementById("receiptListContainer");
+    container.innerHTML = "";
+
+    const keys = Object.keys(currentMonthReceipts).sort().reverse();
+    if (keys.length === 0) {
+      container.innerHTML = `<div style="text-align:center; padding:16px; color:#a49b8f; font-size:13px;">이번 달 등록된 지출 영수증이 없습니다.<br>위에서 날짜와 금액을 입력해 추가해보세요.</div>`;
+      return;
+    }
+
+    keys.forEach(k => {
+      const r = currentMonthReceipts[k];
+      const row = document.createElement("div");
+      row.className = "receipt-row";
+      row.innerHTML = `
+        <span class="receipt-row-date">📅 ${r.date}</span>
+        <div class="receipt-row-amount">
+          <span>$${Number(r.amount).toFixed(2)}</span>
+          <button class="btn-receipt-action" onclick="editReceipt('${k}', ${r.amount})" title="금액 수정">✏️</button>
+          <button class="btn-receipt-action" onclick="deleteReceipt('${k}')" title="삭제">✕</button>
+        </div>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  function addReceiptRecord() {
+    const dateInput = document.getElementById("receiptDateInput");
+    const amountInput = document.getElementById("receiptAmountInput");
+    const date = dateInput.value;
+    const amount = parseFloat(amountInput.value);
+
+    if (!date) {
+      alert("날짜를 선택하세요.");
+      return;
+    }
+    if (isNaN(amount) || amount <= 0) {
+      alert("올바른 금액을 입력하세요.");
+      return;
+    }
+
+    const ym = getCurrentYearMonth().replace("/", "_");
+    receiptsRef.child(ym).push({
+      date: date,
+      amount: amount,
+      createdAt: Date.now()
+    });
+
+    amountInput.value = "";
+  }
+
+  function editReceipt(key, currentAmount) {
+    const newVal = prompt("수정할 금액을 입력하세요 ($):", currentAmount);
+    if (newVal !== null) {
+      const parsed = parseFloat(newVal);
+      if (!isNaN(parsed) && parsed > 0) {
+        const ym = getCurrentYearMonth().replace("/", "_");
+        receiptsRef.child(ym).child(key).update({ amount: parsed });
       }
+    }
+  }
+
+  function deleteReceipt(key) {
+    if (confirm("이 날짜의 지출 내역을 삭제하시겠습니까?")) {
+      const ym = getCurrentYearMonth().replace("/", "_");
+      receiptsRef.child(ym).child(key).remove();
     }
   }
 
@@ -1390,18 +1580,19 @@
     const currentMonth = getCurrentYearMonth();
     const completedItems = items.filter(it => it.completed);
 
-    const calculatedSum = completedItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
-    const finalSum = (currentMonthOverride !== null && currentMonthOverride !== undefined) ? currentMonthOverride : calculatedSum;
+    const receiptTotal = Object.values(currentMonthReceipts).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+    const itemCompletedSum = completedItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
+    const finalSum = receiptTotal > 0 ? receiptTotal : itemCompletedSum;
 
     if (completedItems.length === 0 && finalSum === 0) {
-      alert("이번 달에 완료된 구매 내역이 없습니다.");
+      alert("이번 달에 완료된 구매 내역이나 영수증 지출이 없습니다.");
       return;
     }
 
     const confirmMsg = `[${currentMonth}] 마감을 진행하시겠습니까?\n\n` +
                        `• 이번 달 구매 완료: ${completedItems.length}개 품목\n` +
-                       `• 총 지출 합계: $${Number(finalSum).toFixed(2)}\n\n` +
-                       `확인을 누르면 히스토리에 영구 저장되고, 완료 목록 및 금액이 새로 갱신됩니다.`;
+                       `• 총 지출 합계: $${finalSum.toFixed(2)}\n\n` +
+                       `확인을 누르면 히스토리에 영구 저장되고, 완료 목록 및 이번 달 지출이 새로 갱신됩니다.`;
 
     if (confirm(confirmMsg)) {
       const safeKey = currentMonth.replace("/", "_");
@@ -1428,7 +1619,7 @@
         updates[it.key] = null;
       });
       itemsRef.update(updates);
-      metaRef.child("overrideTotal").remove();
+      receiptsRef.child(safeKey).remove();
 
       alert(`[${currentMonth}] 지출 마감과 저장이 완료되었습니다! ✨`);
     }
@@ -1539,7 +1730,7 @@
     const author = getMemberInfo(item.addedBy);
     const icon = getItemEmoji(item.name, item.cat);
     const displayName = cleanDisplayName(item.name);
-    const storeTag = (item.store && item.store !== "Store" && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
+    const storeTag = (item.store && item.store !== "Store" && item.store !== "etc." && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
     const priceDisplay = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
     const qtyText = item.qty ? item.qty : "1";
 
@@ -1586,14 +1777,14 @@
 
     const cartPendingTotal = pendingItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
     
+    // 날짜별 영수증 입력 합산 (있으면 영수증 합계, 없으면 체크된 완료 품목 합계)
+    const receiptSum = Object.values(currentMonthReceipts).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
     const currentMonth = getCurrentYearMonth();
     const calculatedMonthTotal = completedItems
       .filter(it => !it.completedMonth || it.completedMonth === currentMonth)
       .reduce((acc, it) => acc + (Number(it.price) || 0), 0);
 
-    const displayedMonthTotal = (currentMonthOverride !== null && currentMonthOverride !== undefined) 
-      ? Number(currentMonthOverride) 
-      : calculatedMonthTotal;
+    const displayedMonthTotal = receiptSum > 0 ? receiptSum : calculatedMonthTotal;
 
     document.getElementById("cartTotalCostDisplay").textContent = `$${cartPendingTotal.toFixed(2)}`;
     document.getElementById("monthCompletedCostDisplay").innerHTML = `$${displayedMonthTotal.toFixed(2)} <span style="font-size:12px;opacity:0.8;">✏️</span>`;
@@ -1661,7 +1852,7 @@
         const buyer = getMemberInfo(item.completedBy || item.addedBy);
         const icon = getItemEmoji(item.name, item.cat);
         const displayName = cleanDisplayName(item.name);
-        const storeTag = (item.store && item.store !== "Store" && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
+        const storeTag = (item.store && item.store !== "Store" && item.store !== "etc." && item.store !== "상관없음") ? `<span class="store-badge">${item.store}</span>` : "";
         const priceVal = item.price ? `$${Number(item.price).toFixed(2)}` : "$0.00";
         const qtyDisplay = item.qty ? ` (${item.qty})` : "";
 
