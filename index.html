@@ -323,7 +323,6 @@
       color: var(--text-dark);
     }
 
-    /* Store 드롭다운 자리에 직접 교체되어 들어가는 래퍼 */
     .store-input-swap-wrap {
       flex: 1;
       min-width: 0;
@@ -487,7 +486,6 @@
     .btn-restore:hover { background: #e0ded8; }
     .empty-note { text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px 0; }
 
-    /* 모달 베이스 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -554,7 +552,6 @@
       border-radius: 6px;
     }
 
-    /* 날짜별 영수증 관리 모달 */
     .receipt-add-box {
       display: flex;
       gap: 6px;
@@ -614,7 +611,6 @@
     }
     .btn-receipt-action:hover { color: #d9534f; }
 
-    /* PIN 설정 팝업 모달 */
     .req-pin-box {
       text-align: center;
       padding: 10px 0 6px;
@@ -652,7 +648,6 @@
       background: var(--primary-green-hover);
     }
 
-    /* Donna 전용 가입 승인 모달 */
     .donna-req-item {
       display: flex;
       align-items: center;
@@ -1028,21 +1023,101 @@
     "기타": "🛒"
   };
 
+  // 브랜드 및 키워드 기반 상세 이모티콘 엔진
   function getItemEmoji(name, cat) {
     const text = cleanDisplayName(name).toLowerCase();
-    if (text.includes("블루베리") || text.includes("blueberry") || text.includes("berry")) return "🫐";
-    if (text.includes("귤") || text.includes("mandarin") || text.includes("clementine") || text.includes("오렌지")) return "🍊";
+
+    // 1. 의약품 / 건강 보조제
+    if (text.includes("타이레놀") || text.includes("tylenol") || 
+        text.includes("애드빌") || text.includes("advil") || 
+        text.includes("모트린") || text.includes("motrin") || 
+        text.includes("알레그라") || text.includes("allegra") ||
+        text.includes("지르텍") || text.includes("zyrtec") || 
+        text.includes("클라리틴") || text.includes("claritin") ||
+        text.includes("감기약") || text.includes("해열제") || 
+        text.includes("진통제") || text.includes("소화제") || 
+        text.includes("비타민") || text.includes("vitamin") || 
+        text.includes("유산균") || text.includes("probiotics") ||
+        text.includes("오메가") || text.includes("영양제") || 
+        text.includes("약") || text.includes("pill") || text.includes("medicine")) return "💊";
+
+    if (text.includes("밴드") || text.includes("bandaid") || text.includes("반창고") || 
+        text.includes("후시딘") || text.includes("마데카솔") || text.includes("연고") || text.includes("파스")) return "🩹";
+
+    // 2. 과일 & 채소
+    if (text.includes("블루베리") || text.includes("blueberry") || text.includes("berry") || text.includes("베리")) return "🫐";
+    if (text.includes("귤") || text.includes("mandarin") || text.includes("clementine") || text.includes("tangerine") || text.includes("오렌지") || text.includes("orange")) return "🍊";
     if (text.includes("사과") || text.includes("apple")) return "🍎";
     if (text.includes("바나나") || text.includes("banana")) return "🍌";
     if (text.includes("딸기") || text.includes("strawberry")) return "🍓";
     if (text.includes("포도") || text.includes("grape")) return "🍇";
-    if (text.includes("우유") || text.includes("milk")) return "🥛";
-    if (text.includes("계란") || text.includes("달걀") || text.includes("egg")) return "🥚";
-    if (text.includes("라면") || text.includes("신라면") || text.includes("ramen")) return "🍜";
-    if (text.includes("햇반") || text.includes("쌀") || text.includes("rice")) return "🍚";
-    if (text.includes("커피") || text.includes("스타벅스") || text.includes("coffee")) return "☕";
-    if (text.includes("고기") || text.includes("소고기") || text.includes("삼겹살") || text.includes("beef") || text.includes("pork")) return "🥩";
-    if (text.includes("휴지") || text.includes("tissue")) return "🧻";
+    if (text.includes("수박") || text.includes("watermelon")) return "🍉";
+    if (text.includes("레몬") || text.includes("lemon")) return "🍋";
+    if (text.includes("복숭아") || text.includes("peach")) return "🍑";
+    if (text.includes("체리") || text.includes("cherry")) return "🍒";
+    if (text.includes("키위") || text.includes("kiwi")) return "🥝";
+    if (text.includes("파인애플") || text.includes("pineapple")) return "🍍";
+    if (text.includes("망고") || text.includes("mango")) return "🥭";
+    if (text.includes("아보카도") || text.includes("avocado")) return "🥑";
+    if (text.includes("토마토") || text.includes("tomato")) return "🍅";
+    if (text.includes("오이") || text.includes("cucumber")) return "🥒";
+    if (text.includes("당근") || text.includes("carrot")) return "🥕";
+    if (text.includes("양파") || text.includes("onion")) return "🧅";
+    if (text.includes("마늘") || text.includes("garlic")) return "🧄";
+    if (text.includes("버섯") || text.includes("mushroom")) return "🍄";
+    if (text.includes("감자") || text.includes("potato")) return "🥔";
+    if (text.includes("고구마")) return "🍠";
+    if (text.includes("옥수수") || text.includes("corn")) return "🌽";
+    if (text.includes("브로콜리") || text.includes("broccoli")) return "🥦";
+    if (text.includes("고추") || text.includes("pepper")) return "🌶️";
+    if (text.includes("상추") || text.includes("샐러드") || text.includes("배추") || text.includes("시금치") || text.includes("깻잎") || text.includes("파")) return "🥬";
+
+    // 3. 커피 / 음료 / 주류
+    if (text.includes("스타벅스") || text.includes("starbucks") || text.includes("커피") || text.includes("coffee") || 
+        text.includes("라떼") || text.includes("네스프레소") || text.includes("원두") || text.includes("맥심") || text.includes("카누")) return "☕";
+    if (text.includes("콜라") || text.includes("coke") || text.includes("사이다") || text.includes("탄산") || text.includes("소다")) return "🥤";
+    if (text.includes("주스") || text.includes("juice")) return "🧃";
+    if (text.includes("맥주") || text.includes("beer")) return "🍺";
+    if (text.includes("와인") || text.includes("wine") || text.includes("샤도네이")) return "🍷";
+    if (text.includes("위스키") || text.includes("whisky") || text.includes("whiskey") || text.includes("소주")) return "🥃";
+    if (text.includes("생수") || text.includes("water") || text.includes("삼다수") || text.includes("탄산수")) return "💧";
+
+    // 4. 가공식품 / 면 / 간식
+    if (text.includes("신라면") || text.includes("진라면") || text.includes("불닭") || text.includes("너구리") || 
+        text.includes("짜파게티") || text.includes("라면") || text.includes("ramen") || text.includes("noodle") || 
+        text.includes("국수") || text.includes("파스타") || text.includes("스파게티")) return "🍜";
+    if (text.includes("햇반") || text.includes("오뚜기밥") || text.includes("쌀") || text.includes("rice") || text.includes("즉석밥")) return "🍚";
+    if (text.includes("과자") || text.includes("쿠키") || text.includes("cookie") || text.includes("스낵") || text.includes("칩") || text.includes("오레오")) return "🍪";
+    if (text.includes("초콜릿") || text.includes("chocolate")) return "🍫";
+    if (text.includes("아이스크림") || text.includes("ice cream")) return "🍦";
+    if (text.includes("시리얼") || text.includes("cereal") || text.includes("그래놀라") || text.includes("요거트") || text.includes("yogurt")) return "🥣";
+    if (text.includes("스팸") || text.includes("spam") || text.includes("소세지") || text.includes("소시지") || text.includes("핫도그")) return "🌭";
+    if (text.includes("케첩") || text.includes("마요네즈") || text.includes("잼") || text.includes("꿀") || text.includes("소스")) return "🍯";
+    if (text.includes("오일") || text.includes("참기름") || text.includes("식용유") || text.includes("oil")) return "🫒";
+
+    // 5. 육류 & 해산물
+    if (text.includes("소고기") || text.includes("스테이크") || text.includes("beef") || text.includes("갈비") || text.includes("불고기")) return "🥩";
+    if (text.includes("돼지") || text.includes("삼겹살") || text.includes("베이컨") || text.includes("pork") || text.includes("bacon")) return "🥓";
+    if (text.includes("닭") || text.includes("치킨") || text.includes("chicken")) return "🍗";
+    if (text.includes("생선") || text.includes("연어") || text.includes("고등어") || text.includes("참치") || text.includes("fish") || text.includes("salmon")) return "🐟";
+    if (text.includes("새우") || text.includes("shrimp")) return "🍤";
+    if (text.includes("게") || text.includes("crab")) return "🦀";
+    if (text.includes("오징어") || text.includes("문어") || text.includes("낙지")) return "🐙";
+
+    // 6. 유제품 & 베이커리
+    if (text.includes("우유") || text.includes("milk") || text.includes("두유")) return "🥛";
+    if (text.includes("치즈") || text.includes("cheese")) return "🧀";
+    if (text.includes("달걀") || text.includes("계란") || text.includes("egg")) return "🥚";
+    if (text.includes("버터") || text.includes("butter")) return "🧈";
+    if (text.includes("식빵") || text.includes("베이글") || text.includes("bread") || text.includes("빵")) return "🍞";
+
+    // 7. 생활용품 / 위생용품
+    if (text.includes("휴지") || text.includes("화장지") || text.includes("키친타올") || text.includes("물티슈") || text.includes("tissue")) return "🧻";
+    if (text.includes("세제") || text.includes("비누") || text.includes("soap") || text.includes("퐁퐁")) return "🧼";
+    if (text.includes("샴푸") || text.includes("린스") || text.includes("바디워시") || text.includes("로션")) return "🧴";
+    if (text.includes("치약") || text.includes("칫솔")) return "🪥";
+    if (text.includes("지퍼백") || text.includes("크린랩") || text.includes("호일") || text.includes("박스")) return "📦";
+
     return categoryIcons[cat] || "🛒";
   }
 
@@ -1339,7 +1414,6 @@
     return members.find(m => m.name === name) || { name: name, emoji: "👤", bg: "#7d8b82" };
   }
 
-  // Store에서 etc. 선택 시 같은 자리에 바로 직접입력창 노출
   function onStoreSelectChange(select) {
     select.classList.toggle('placeholder-color', !select.value);
     if (select.value === "etc.") {
@@ -1484,7 +1558,6 @@
     }
   }
 
-  // 날짜별 영수증 관리 모달 관련 함수
   function openReceiptModal() {
     document.getElementById("receiptDateInput").value = getTodayString();
     document.getElementById("receiptAmountInput").value = "";
@@ -1777,7 +1850,6 @@
 
     const cartPendingTotal = pendingItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
     
-    // 날짜별 영수증 입력 합산 (있으면 영수증 합계, 없으면 체크된 완료 품목 합계)
     const receiptSum = Object.values(currentMonthReceipts).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
     const currentMonth = getCurrentYearMonth();
     const calculatedMonthTotal = completedItems
