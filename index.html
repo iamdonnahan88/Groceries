@@ -1012,6 +1012,25 @@
     return `${y}-${m}-${day}`;
   }
 
+  // 날짜 형식을 항상 yyyy/mm/dd 로 변환하는 유틸리티 함수
+  function formatDateSlash(dateStr) {
+    if (!dateStr) return "";
+    const clean = String(dateStr).replace(/[-_.]/g, "/");
+    const parts = clean.split("/").filter(p => p.trim() !== "");
+    if (parts.length >= 3) {
+      const y = parts[0].padStart(4, "20");
+      const m = parts[1].padStart(2, "0");
+      const d = parts[2].padStart(2, "0");
+      return `${y}/${m}/${d}`;
+    }
+    if (parts.length === 2) {
+      const y = parts[0].padStart(4, "20");
+      const m = parts[1].padStart(2, "0");
+      return `${y}/${m}/01`;
+    }
+    return clean;
+  }
+
   const STORES = ["ALL", "Costco", "HEB", "Trader Joe's", "H-Mart", "Kroger", "기타"];
   let selectedStoreFilter = "ALL";
 
@@ -1019,6 +1038,7 @@
   let items = [];
   let historyData = {};
   let currentMonthReceipts = {};
+  let allReceiptsData = {};
   let currentUser = null;
   let targetLockedMember = null;
   let pendingNewMemberName = "";
@@ -1159,14 +1179,25 @@
 
     Object.keys(groupsByMonth).forEach(m => {
       const monthItems = groupsByMonth[m];
-      const monthSum = monthItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
       const safeKey = m.replace("/", "_");
       const existingHistory = historyData[safeKey] || { items: [], total: 0 };
 
+      // 영수증 데이터가 있으면 영수증 합계, 없으면 기존 품목 금액 합
+      const pastR = allReceiptsData[safeKey] || {};
+      const rTotal = Object.values(pastR).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+      const itemsSum = monthItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
+      const totalAmount = rTotal > 0 ? rTotal : (existingHistory.total || itemsSum);
+
       const combinedItems = (existingHistory.items || []).concat(
         monthItems.map(it => {
-          const d = new Date(it.completedAt || it.createdAt || Date.now());
-          const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+          let dateStr = "";
+          if (it.receiptDate) {
+            dateStr = formatDateSlash(it.receiptDate);
+          } else if (it.completedAt) {
+            dateStr = formatDateSlash(new Date(it.completedAt).toISOString().split("T")[0]);
+          } else {
+            dateStr = `${m}/01`;
+          }
           return {
             date: dateStr,
             name: cleanDisplayName(it.name),
@@ -1176,11 +1207,10 @@
           };
         })
       );
-      const combinedTotal = (existingHistory.total || 0) + monthSum;
 
       historyRef.child(safeKey).set({
         month: m,
-        total: Math.round(combinedTotal * 100) / 100,
+        total: Math.round(totalAmount * 100) / 100,
         items: combinedItems,
         closedAt: Date.now()
       });
@@ -1212,20 +1242,20 @@
 
   // 영수증 데이터 감시
   receiptsRef.on("value", snapshot => {
-    const allReceipts = snapshot.val() || {};
+    allReceiptsData = snapshot.val() || {};
     const currentMonth = getCurrentYearMonth();
     const currentSafeKey = currentMonth.replace("/", "_");
 
-    currentMonthReceipts = allReceipts[currentSafeKey] || {};
+    currentMonthReceipts = allReceiptsData[currentSafeKey] || {};
 
     // 지난달 영수증 정리 및 히스토리 보존
-    Object.keys(allReceipts).forEach(safeKey => {
+    Object.keys(allReceiptsData).forEach(safeKey => {
       if (safeKey < currentSafeKey) {
-        const pastR = allReceipts[safeKey];
+        const pastR = allReceiptsData[safeKey];
         const rTotal = Object.values(pastR).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
         const originalMonth = safeKey.replace("_", "/");
         const existingHistory = historyData[safeKey] || { items: [], total: 0 };
-        const combinedTotal = Math.max(existingHistory.total || 0, rTotal);
+        const combinedTotal = rTotal > 0 ? rTotal : (existingHistory.total || 0);
 
         historyRef.child(safeKey).set({
           month: originalMonth,
@@ -1662,10 +1692,11 @@
 
     keys.forEach(k => {
       const r = currentMonthReceipts[k];
+      const displayDate = formatDateSlash(r.date);
       const row = document.createElement("div");
       row.className = "receipt-row";
       row.innerHTML = `
-        <span class="receipt-row-date">📅 ${r.date}</span>
+        <span class="receipt-row-date">📅 ${displayDate}</span>
         <div class="receipt-row-amount">
           <span>$${Number(r.amount).toFixed(2)}</span>
           <button class="btn-receipt-action" onclick="editReceipt('${k}', ${r.amount})" title="금액 수정">✏️</button>
@@ -1748,12 +1779,21 @@
     if (confirm(confirmMsg)) {
       const safeKey = currentMonth.replace("/", "_");
       const existingHistory = historyData[safeKey] || { items: [], total: 0 };
+      
+      // 등록된 영수증 중 가장 최근 일자 또는 당월 첫날 기준 매핑
+      const receiptDates = Object.values(currentMonthReceipts).map(r => r.date).filter(Boolean).sort();
+      const defaultDate = receiptDates.length > 0 ? formatDateSlash(receiptDates[receiptDates.length - 1]) : `${currentMonth}/01`;
+
       const combinedItems = (existingHistory.items || []).concat(
         completedItems.map(it => {
-          const d = new Date(it.completedAt || it.createdAt || Date.now());
-          const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+          let itemDate = defaultDate;
+          if (it.receiptDate) {
+            itemDate = formatDateSlash(it.receiptDate);
+          } else if (it.completedAt) {
+            itemDate = formatDateSlash(new Date(it.completedAt).toISOString().split("T")[0]);
+          }
           return {
-            date: dateStr,
+            date: itemDate,
             name: cleanDisplayName(it.name),
             qty: it.qty || "1",
             price: it.price || 0,
@@ -1818,7 +1858,7 @@
     document.getElementById("historyModalOverlay").style.display = "none";
   }
 
-  // 엑셀 다운로드: 각 월별 탭(시트) 생성 및 구매 품목/날짜 기록
+  // 엑셀 다운로드: 각 월별 탭(시트) 생성 및 yyyy/mm/dd 일자별 품목 정렬 기록
   function exportHistoryToExcel() {
     const keys = Object.keys(historyData).sort();
 
@@ -1837,9 +1877,17 @@
       rows.push(["구매일자", "품목명", "수량", "구매처", "금액($)"]);
 
       if (h.items && h.items.length > 0) {
-        h.items.forEach(it => {
+        // yyyy/mm/dd 일자 오름차순 정렬
+        const sortedItems = [...h.items].sort((a, b) => {
+          const dateA = formatDateSlash(a.date);
+          const dateB = formatDateSlash(b.date);
+          return dateA.localeCompare(dateB);
+        });
+
+        sortedItems.forEach(it => {
+          const formattedDate = formatDateSlash(it.date) || `${(h.month || k)}/01`;
           rows.push([
-            it.date || `${h.month || k}-01`,
+            formattedDate,
             it.name || "",
             it.qty || "1",
             it.store || "",
@@ -1853,7 +1901,7 @@
 
       const ws = XLSX.utils.aoa_to_sheet(rows);
       ws["!cols"] = [
-        { wch: 14 },
+        { wch: 15 },
         { wch: 22 },
         { wch: 10 },
         { wch: 14 },
@@ -1863,7 +1911,7 @@
       XLSX.utils.book_append_sheet(wb, ws, sheetName);
     });
 
-    XLSX.writeFile(wb, `장보기_지출_히스토리_${getTodayString()}.xlsx`);
+    XLSX.writeFile(wb, `장보기_지출_히스토리_${getTodayString().replace(/-/g, "")}.xlsx`);
   }
 
   function renderQuickAdd() {
@@ -1973,7 +2021,7 @@
 
     const cartPendingTotal = pendingItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
     
-    // 이번 달 구매 금액은 오직 사용자가 직접 등록한 영수증 금액들의 합계로만 표시
+    // 이번 달 구매 금액: 사용자가 직접 입력한 영수증 금액들의 합계
     const receiptSum = Object.values(currentMonthReceipts).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
 
     document.getElementById("cartTotalCostDisplay").textContent = `$${cartPendingTotal.toFixed(2)}`;
