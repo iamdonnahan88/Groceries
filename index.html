@@ -7,8 +7,11 @@
   
   <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+  <!-- 엑셀 다운로드를 위한 SheetJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <style>
     :root {
@@ -527,29 +530,33 @@
       background: #faf7f2;
       border: 1px solid #ebdccb;
       border-radius: 14px;
-      padding: 14px;
+      padding: 16px 18px;
       margin-bottom: 12px;
     }
     .history-month-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
     }
-    .history-month-title { font-size: 15px; font-weight: 800; color: #375b42; }
-    .history-month-total { font-size: 16px; font-weight: 800; color: var(--accent-price); }
-    .history-item-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
+    .history-month-title { font-size: 15.5px; font-weight: 800; color: #375b42; }
+    .history-month-total { font-size: 17px; font-weight: 800; color: var(--accent-price); }
+
+    .btn-download-excel {
+      background: #107c41;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 8px;
       font-size: 11.5px;
-      color: #6b5c4d;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-right: 6px;
     }
-    .history-item-tag {
-      background: #fff;
-      border: 1px solid #e5ded4;
-      padding: 2px 7px;
-      border-radius: 6px;
+    .btn-download-excel:hover {
+      background: #0b5c30;
     }
 
     .receipt-add-box {
@@ -746,7 +753,7 @@
         <div class="cost-info-right">
           <div class="done-amount">
             <span>이번 달 구매한 금액</span>
-            <strong id="monthCompletedCostDisplay" onclick="openReceiptModal()" title="날짜별 지출 내역 수정 및 누적">$0.00 ✏️</strong>
+            <strong id="monthCompletedCostDisplay" onclick="openReceiptModal()" title="영수증 금액 직접 입력 및 관리">$0.00 ✏️</strong>
           </div>
         </div>
       </div>
@@ -894,7 +901,10 @@
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
         <h3>월별 장보기 지출 히스토리 📊</h3>
-        <button type="button" class="modal-close" onclick="closeHistoryModal()">&times;</button>
+        <div style="display:flex; align-items:center;">
+          <button type="button" class="btn-download-excel" onclick="exportHistoryToExcel()" title="월별 엑셀 시트로 다운로드">📊 엑셀 다운로드</button>
+          <button type="button" class="modal-close" onclick="closeHistoryModal()">&times;</button>
+        </div>
       </div>
       <div id="historyModalBody" class="modal-body"></div>
     </div>
@@ -1025,7 +1035,7 @@
   function getItemEmoji(name, cat) {
     const raw = (name || "").replace(/\s+/g, "").toLowerCase();
 
-    // 1. 의약품 & 건강보조제 (타이레놀, 모트린, 애드빌 등)
+    // 1. 의약품 & 건강보조제
     if (
       raw.includes("타이레놀") || raw.includes("tylenol") ||
       raw.includes("모트린") || raw.includes("motrin") ||
@@ -1091,7 +1101,7 @@
     if (raw.includes("연어") || raw.includes("생선") || raw.includes("고등어") || raw.includes("salmon") || raw.includes("fish")) return "🐟";
     if (raw.includes("새우") || raw.includes("shrimp")) return "🍤";
 
-    // 6. 유제품 / 베이커리 (크로와상 포함)
+    // 6. 유제품 / 베이커리 (크로와상 🥐)
     if (raw.includes("크로와상") || raw.includes("크루아상") || raw.includes("croissant")) return "🥐";
     if (raw.includes("우유") || raw.includes("milk") || raw.includes("두유")) return "🥛";
     if (raw.includes("치즈") || raw.includes("cheese")) return "🧀";
@@ -1132,7 +1142,6 @@
   function checkAndAutoArchivePastMonths(allItems) {
     const currentMonth = getCurrentYearMonth();
     
-    // 현재 달보다 이전 달에 완료된 품목 필터링
     const pastCompletedItems = allItems.filter(it => 
       it.completed && it.completedMonth && it.completedMonth < currentMonth
     );
@@ -1155,12 +1164,17 @@
       const existingHistory = historyData[safeKey] || { items: [], total: 0 };
 
       const combinedItems = (existingHistory.items || []).concat(
-        monthItems.map(it => ({
-          name: cleanDisplayName(it.name),
-          qty: it.qty || "1",
-          price: it.price || 0,
-          store: it.store || ""
-        }))
+        monthItems.map(it => {
+          const d = new Date(it.completedAt || it.createdAt || Date.now());
+          const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+          return {
+            date: dateStr,
+            name: cleanDisplayName(it.name),
+            qty: it.qty || "1",
+            price: it.price || 0,
+            store: it.store || ""
+          };
+        })
       );
       const combinedTotal = (existingHistory.total || 0) + monthSum;
 
@@ -1172,7 +1186,6 @@
       });
     });
 
-    // 이관된 지난달 품목 items 목록에서 제거
     pastCompletedItems.forEach(it => {
       updates[it.key] = null;
     });
@@ -1189,10 +1202,7 @@
   itemsRef.on("value", snapshot => {
     const data = snapshot.val();
     items = data ? Object.keys(data).map(key => ({ ...data[key], key })) : [];
-    
-    // 달 변경 자동 감지 및 히스토리 자동 이관 실행
     checkAndAutoArchivePastMonths(items);
-    
     renderApp();
   });
 
@@ -1200,7 +1210,7 @@
     historyData = snapshot.val() || {};
   });
 
-  // 월별 영수증 전체 감시 및 지난달 영수증 자동 이관
+  // 영수증 데이터 감시
   receiptsRef.on("value", snapshot => {
     const allReceipts = snapshot.val() || {};
     const currentMonth = getCurrentYearMonth();
@@ -1208,7 +1218,7 @@
 
     currentMonthReceipts = allReceipts[currentSafeKey] || {};
 
-    // 지난달 영수증 데이터가 남아있다면 히스토리로 합산 후 정리
+    // 지난달 영수증 정리 및 히스토리 보존
     Object.keys(allReceipts).forEach(safeKey => {
       if (safeKey < currentSafeKey) {
         const pastR = allReceipts[safeKey];
@@ -1586,6 +1596,7 @@
       completedBy: null,
       completed: false,
       completedMonth: null,
+      completedAt: null,
       createdAt: Date.now()
     });
   }
@@ -1595,7 +1606,8 @@
     itemsRef.child(key).update({
       completed: isNowCompleted,
       completedBy: isNowCompleted ? (currentUser ? currentUser.name : "사용자") : null,
-      completedMonth: isNowCompleted ? getCurrentYearMonth() : null
+      completedMonth: isNowCompleted ? getCurrentYearMonth() : null,
+      completedAt: isNowCompleted ? Date.now() : null
     });
   }
 
@@ -1722,31 +1734,34 @@
     const completedItems = items.filter(it => it.completed);
 
     const receiptTotal = Object.values(currentMonthReceipts).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
-    const itemCompletedSum = completedItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
-    const finalSum = receiptTotal > 0 ? receiptTotal : itemCompletedSum;
 
-    if (completedItems.length === 0 && finalSum === 0) {
+    if (completedItems.length === 0 && receiptTotal === 0) {
       alert("이번 달에 완료된 구매 내역이나 영수증 지출이 없습니다.");
       return;
     }
 
     const confirmMsg = `[${currentMonth}] 마감을 진행하시겠습니까?\n\n` +
-                       `• 이번 달 구매 완료: ${completedItems.length}개 품목\n` +
-                       `• 총 지출 합계: $${finalSum.toFixed(2)}\n\n` +
+                       `• 이번 달 등록된 영수증 지출: $${receiptTotal.toFixed(2)}\n` +
+                       `• 완료된 품목 수: ${completedItems.length}개\n\n` +
                        `확인을 누르면 히스토리에 영구 저장되고, 완료 목록 및 이번 달 지출이 새로 갱신됩니다.`;
 
     if (confirm(confirmMsg)) {
       const safeKey = currentMonth.replace("/", "_");
       const existingHistory = historyData[safeKey] || { items: [], total: 0 };
       const combinedItems = (existingHistory.items || []).concat(
-        completedItems.map(it => ({
-          name: cleanDisplayName(it.name),
-          qty: it.qty || "1",
-          price: it.price || 0,
-          store: it.store || ""
-        }))
+        completedItems.map(it => {
+          const d = new Date(it.completedAt || it.createdAt || Date.now());
+          const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+          return {
+            date: dateStr,
+            name: cleanDisplayName(it.name),
+            qty: it.qty || "1",
+            price: it.price || 0,
+            store: it.store || ""
+          };
+        })
       );
-      const combinedTotal = (existingHistory.total || 0) + finalSum;
+      const combinedTotal = (existingHistory.total || 0) + receiptTotal;
 
       historyRef.child(safeKey).set({
         month: currentMonth,
@@ -1766,6 +1781,7 @@
     }
   }
 
+  // 지출 내역 모달: 웹 화면에서는 품목 태그 없이 월별 총 금액만 표시
   function openHistoryModal() {
     const modalBody = document.getElementById("historyModalBody");
     modalBody.innerHTML = "";
@@ -1784,19 +1800,10 @@
         const card = document.createElement("div");
         card.className = "history-card";
 
-        const tagsHtml = (h.items || []).map(it => {
-          const qtyStr = it.qty ? ` (${it.qty})` : "";
-          const priceStr = it.price ? ` · $${Number(it.price).toFixed(2)}` : "";
-          return `<span class="history-item-tag">${cleanDisplayName(it.name)}${qtyStr}${priceStr}</span>`;
-        }).join("");
-
         card.innerHTML = `
           <div class="history-month-row">
             <span class="history-month-title">📅 ${displayMonth}</span>
             <span class="history-month-total">$${(Number(h.total) || 0).toFixed(2)}</span>
-          </div>
-          <div class="history-item-tags">
-            ${tagsHtml || "<span style='color:#a49b8f;'>상세 품목 없음</span>"}
           </div>
         `;
         modalBody.appendChild(card);
@@ -1809,6 +1816,54 @@
   function closeHistoryModal(e) {
     if (e && e.target !== e.currentTarget && !e.target.classList.contains("modal-close")) return;
     document.getElementById("historyModalOverlay").style.display = "none";
+  }
+
+  // 엑셀 다운로드: 각 월별 탭(시트) 생성 및 구매 품목/날짜 기록
+  function exportHistoryToExcel() {
+    const keys = Object.keys(historyData).sort();
+
+    if (keys.length === 0) {
+      alert("다운로드할 지출 내역이 없습니다.");
+      return;
+    }
+
+    const wb = XLSX.utils.book_new();
+
+    keys.forEach(k => {
+      const h = historyData[k];
+      const sheetName = (h.month || k).replace("/", "-");
+
+      const rows = [];
+      rows.push(["구매일자", "품목명", "수량", "구매처", "금액($)"]);
+
+      if (h.items && h.items.length > 0) {
+        h.items.forEach(it => {
+          rows.push([
+            it.date || `${h.month || k}-01`,
+            it.name || "",
+            it.qty || "1",
+            it.store || "",
+            Number(it.price || 0)
+          ]);
+        });
+      }
+
+      rows.push([]);
+      rows.push(["", "", "", "월 총 지출 합계", Number(h.total || 0)]);
+
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      ws["!cols"] = [
+        { wch: 14 },
+        { wch: 22 },
+        { wch: 10 },
+        { wch: 14 },
+        { wch: 12 }
+      ];
+
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    });
+
+    XLSX.writeFile(wb, `장보기_지출_히스토리_${getTodayString()}.xlsx`);
   }
 
   function renderQuickAdd() {
@@ -1918,16 +1973,11 @@
 
     const cartPendingTotal = pendingItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
     
+    // 이번 달 구매 금액은 오직 사용자가 직접 등록한 영수증 금액들의 합계로만 표시
     const receiptSum = Object.values(currentMonthReceipts).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
-    const currentMonth = getCurrentYearMonth();
-    const calculatedMonthTotal = completedItems
-      .filter(it => !it.completedMonth || it.completedMonth === currentMonth)
-      .reduce((acc, it) => acc + (Number(it.price) || 0), 0);
-
-    const displayedMonthTotal = receiptSum > 0 ? receiptSum : calculatedMonthTotal;
 
     document.getElementById("cartTotalCostDisplay").textContent = `$${cartPendingTotal.toFixed(2)}`;
-    document.getElementById("monthCompletedCostDisplay").innerHTML = `$${displayedMonthTotal.toFixed(2)} <span style="font-size:12px;opacity:0.8;">✏️</span>`;
+    document.getElementById("monthCompletedCostDisplay").innerHTML = `$${receiptSum.toFixed(2)} <span style="font-size:12px;opacity:0.8;">✏️</span>`;
 
     renderStoreFilters(pendingItems);
 
