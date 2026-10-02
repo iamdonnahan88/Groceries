@@ -69,7 +69,7 @@
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
-      width: 100%;
+      width: 100%; 
       flex-shrink: 0;
     }
     .basket-box { width: 42px; height: 42px; background: #eaf0e8; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
@@ -193,7 +193,7 @@
     #page-grocery { 
       display: none; 
       width: 100%; 
-      padding-top: 10px;
+      padding-top: 10px; 
       padding-bottom: 50px; 
     }
     .top-nav { 
@@ -238,7 +238,7 @@
       align-items: center; 
       gap: 4px; 
       cursor: pointer; 
-      border-bottom: 1px dashed rgba(164, 225, 184, 0.6);
+      border-bottom: 1px dashed rgba(164, 225, 184, 0.6); 
       padding-bottom: 1px;
     }
     
@@ -314,7 +314,7 @@
       font-size: 13px; 
       background: #fff; 
       text-overflow: ellipsis; 
-      color: var(--text-dark);
+      color: var(--text-dark); 
     }
     .select-box.placeholder-color {
       color: #b4bdb6 !important;
@@ -432,7 +432,7 @@
       white-space: normal; 
       word-break: break-word; 
       line-height: 1.35; 
-      color: var(--text-dark);
+      color: var(--text-dark); 
     }
     .item-sub-tags { display: flex; gap: 6px; align-items: center; margin-top: 3px; font-size: 11.5px; flex-wrap: wrap; }
     .item-cat-text { color: var(--text-muted); }
@@ -777,7 +777,7 @@
     <div class="add-box">
       <div class="input-row-1">
         <span class="plus">＋</span>
-        <input type="text" id="itemNameInput" placeholder="블루베리, 귤, 스타벅스 커피, 신라면..." onkeypress="if(event.key==='Enter') addItem()">
+        <input type="text" id="itemNameInput" placeholder="블루베리, 귤, 스타벅스 커피, 신라면, 크로와상..." onkeypress="if(event.key==='Enter') addItem()">
       </div>
       <div class="input-row-2">
         <input type="text" id="itemQtyInput" class="input-qty" placeholder="수량" onkeypress="if(event.key==='Enter') addItem()">
@@ -943,6 +943,7 @@
     "우유": { en: "Whole Milk 1 Gallon", cat: "유제품·달걀", defaultPrices: { "Costco": 3.79, "Trader Joe's": 3.69, "HEB": 3.24, "H-Mart": 4.59, "Kroger": 3.49, "default": 3.89 }, unit: "gal" },
     "버터": { en: "Unsalted Butter (4-pk)", cat: "유제품·달걀", defaultPrices: { "Costco": 11.99, "Trader Joe's": 3.99, "HEB": 4.18, "H-Mart": 5.49, "Kroger": 4.49, "default": 4.49 }, unit: "pk" },
     "식빵": { en: "Sliced Bread", cat: "유제품·달걀", defaultPrices: { "Costco": 5.99, "Trader Joe's": 2.49, "HEB": 2.28, "H-Mart": 3.99, "Kroger": 2.49, "default": 2.99 }, unit: "ea" },
+    "크로와상": { en: "Croissants", cat: "유제품·달걀", defaultPrices: { "Costco": 5.99, "Trader Joe's": 3.99, "HEB": 3.98, "H-Mart": 4.59, "Kroger": 3.99, "default": 4.49 }, unit: "pk" },
     "삼겹살": { en: "Pork Belly (Sliced)", cat: "고기·생선", defaultPrices: { "Costco": 18.99, "Trader Joe's": 6.99, "HEB": 6.49, "H-Mart": 8.99, "Kroger": 6.99, "default": 7.99 }, unit: "lb" },
     "소고기": { en: "Beef Ribeye / Steak", cat: "고기·생선", defaultPrices: { "Costco": 42.99, "Trader Joe's": 12.99, "HEB": 14.99, "H-Mart": 16.99, "Kroger": 13.99, "default": 15.99 }, unit: "pack" },
     "닭가슴살": { en: "Boneless Chicken Breast", cat: "고기·생선", defaultPrices: { "Costco": 22.99, "Trader Joe's": 4.99, "HEB": 3.49, "H-Mart": 4.99, "Kroger": 3.99, "default": 4.29 }, unit: "lb/pk" },
@@ -1090,7 +1091,8 @@
     if (raw.includes("연어") || raw.includes("생선") || raw.includes("고등어") || raw.includes("salmon") || raw.includes("fish")) return "🐟";
     if (raw.includes("새우") || raw.includes("shrimp")) return "🍤";
 
-    // 6. 유제품 / 베이커리
+    // 6. 유제품 / 베이커리 (크로와상 포함)
+    if (raw.includes("크로와상") || raw.includes("크루아상") || raw.includes("croissant")) return "🥐";
     if (raw.includes("우유") || raw.includes("milk") || raw.includes("두유")) return "🥛";
     if (raw.includes("치즈") || raw.includes("cheese")) return "🧀";
     if (raw.includes("달걀") || raw.includes("계란") || raw.includes("egg")) return "🥚";
@@ -1126,6 +1128,57 @@
     return DEFAULT_PINS[low] || null;
   }
 
+  // 달이 바뀌었을 때 지난달 완료 내역을 히스토리로 자동 이관
+  function checkAndAutoArchivePastMonths(allItems) {
+    const currentMonth = getCurrentYearMonth();
+    
+    // 현재 달보다 이전 달에 완료된 품목 필터링
+    const pastCompletedItems = allItems.filter(it => 
+      it.completed && it.completedMonth && it.completedMonth < currentMonth
+    );
+
+    if (pastCompletedItems.length === 0) return;
+
+    const groupsByMonth = {};
+    pastCompletedItems.forEach(it => {
+      const m = it.completedMonth;
+      if (!groupsByMonth[m]) groupsByMonth[m] = [];
+      groupsByMonth[m].push(it);
+    });
+
+    const updates = {};
+
+    Object.keys(groupsByMonth).forEach(m => {
+      const monthItems = groupsByMonth[m];
+      const monthSum = monthItems.reduce((acc, it) => acc + (Number(it.price) || 0), 0);
+      const safeKey = m.replace("/", "_");
+      const existingHistory = historyData[safeKey] || { items: [], total: 0 };
+
+      const combinedItems = (existingHistory.items || []).concat(
+        monthItems.map(it => ({
+          name: cleanDisplayName(it.name),
+          qty: it.qty || "1",
+          price: it.price || 0,
+          store: it.store || ""
+        }))
+      );
+      const combinedTotal = (existingHistory.total || 0) + monthSum;
+
+      historyRef.child(safeKey).set({
+        month: m,
+        total: Math.round(combinedTotal * 100) / 100,
+        items: combinedItems,
+        closedAt: Date.now()
+      });
+    });
+
+    // 이관된 지난달 품목 items 목록에서 제거
+    pastCompletedItems.forEach(it => {
+      updates[it.key] = null;
+    });
+    itemsRef.update(updates);
+  }
+
   membersRef.on("value", snapshot => {
     const data = snapshot.val();
     members = data ? Object.keys(data).map(key => ({ ...data[key], key })) : [];
@@ -1136,6 +1189,10 @@
   itemsRef.on("value", snapshot => {
     const data = snapshot.val();
     items = data ? Object.keys(data).map(key => ({ ...data[key], key })) : [];
+    
+    // 달 변경 자동 감지 및 히스토리 자동 이관 실행
+    checkAndAutoArchivePastMonths(items);
+    
     renderApp();
   });
 
@@ -1143,9 +1200,34 @@
     historyData = snapshot.val() || {};
   });
 
-  const ymKey = getCurrentYearMonth().replace("/", "_");
-  receiptsRef.child(ymKey).on("value", snapshot => {
-    currentMonthReceipts = snapshot.val() || {};
+  // 월별 영수증 전체 감시 및 지난달 영수증 자동 이관
+  receiptsRef.on("value", snapshot => {
+    const allReceipts = snapshot.val() || {};
+    const currentMonth = getCurrentYearMonth();
+    const currentSafeKey = currentMonth.replace("/", "_");
+
+    currentMonthReceipts = allReceipts[currentSafeKey] || {};
+
+    // 지난달 영수증 데이터가 남아있다면 히스토리로 합산 후 정리
+    Object.keys(allReceipts).forEach(safeKey => {
+      if (safeKey < currentSafeKey) {
+        const pastR = allReceipts[safeKey];
+        const rTotal = Object.values(pastR).reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+        const originalMonth = safeKey.replace("_", "/");
+        const existingHistory = historyData[safeKey] || { items: [], total: 0 };
+        const combinedTotal = Math.max(existingHistory.total || 0, rTotal);
+
+        historyRef.child(safeKey).set({
+          month: originalMonth,
+          total: Math.round(combinedTotal * 100) / 100,
+          items: existingHistory.items || [],
+          closedAt: Date.now()
+        });
+
+        receiptsRef.child(safeKey).remove();
+      }
+    });
+
     renderApp();
     if (document.getElementById("receiptModal").style.display === "flex") {
       renderReceiptList();
@@ -1692,7 +1774,7 @@
     if (keys.length === 0) {
       modalBody.innerHTML = `
         <div style="text-align: center; color: #a49b8f; padding: 36px 10px; font-size: 13.5px;">
-          저장된 월별 지출 히스토리가 없습니다.<br>[이번 달 마감 & 갱신]을 진행하면 여기에 차곡차곡 누적됩니다.
+          저장된 월별 지출 히스토리가 없습니다.<br>[이번 달 마감 & 갱신]을 진행하거나 달이 바뀌면 여기에 차곡차곡 누적됩니다.
         </div>
       `;
     } else {
